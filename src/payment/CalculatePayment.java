@@ -1,0 +1,20 @@
+package payment;
+import rules.PaymentRule;
+public abstract class CalculatePayment {
+	
+	PaymentRule rule=new PaymentRule();
+	public double cost_per_mile = rule.carPayment();
+	public double miles;
+	public int no_of_memb;
+	public double ind_cost;
+	public double tot_cost;
+	
+	public CalculatePayment(double miles,int no_of_memb)
+	{
+		this.miles = miles;
+		this.no_of_memb = no_of_memb;
+	}
+	
+	public abstract void cost_for_distance();
+	
+}
