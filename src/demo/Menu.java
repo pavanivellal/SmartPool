@@ -19,7 +19,7 @@ import vehicle.Vehicle;
 public class Menu {
 
 	private Customer customer = new Customer();
-	private AdminMenu staffMenu = new AdminMenu();
+	private AdminMenu adminMenu = new AdminMenu();
 	private DriverMenu driverMenu = new DriverMenu();
 	private CustomerMenu customerMenu = new CustomerMenu();
 	private Driver driver = new Driver();
@@ -29,7 +29,7 @@ public class Menu {
 			displayMainMenu();
 	}
 /*
- * 
+ * Created by shital
  */
 	private void displayMainMenu() {
 		// This is the main menu for the system
@@ -227,10 +227,10 @@ public class Menu {
 	private void displayAdminMenu() {
 		try {
 			while (true) {
-				staffMenu = new AdminMenu();
+				adminMenu = new AdminMenu();
 				System.out.println();
 				System.out.println("-------------------------------------------");
-				System.out.println("Welcome Staff");
+				System.out.println("Welcome Admin");
 				System.out.println("1. List of Customers");
 				System.out.println("2. List of Drivers");
 				System.out.println("3. Generate Reports");
@@ -248,20 +248,18 @@ public class Menu {
 					case 0:
 						break;
 					case 1:
-						staffMenu.getListOfCustomers();
+						adminMenu.getListOfCustomers();
 						break;
 					case 2:
-						staffMenu.getListOfDrivers();
+						adminMenu.getListOfDrivers();
 						break;
 					case 3:
-						ReportSetup setup = new ReportSetup();
-						setup.reportSetup();
-						break;
-                        
+						adminMenu.generateReports();
+						break;                     
                     case 4:
-                            break;
+                        break;
 					case 5:
-							staffMenu.NotifyOffers();
+						adminMenu.NotifyOffers();
 						break;
 					}
 					if (option == 0) {

@@ -9,8 +9,9 @@ import java.util.Queue;
 import DAO.MySQLAccess;
 import membership.Customer;
 import membership.Driver;
-import specialOffer.Discount10;
-import specialOffer.Discount25;
+import report.ReportSetup;
+import specialOffer.CustomerGroup;
+import specialOffer.DriverGroup;
 
 public class AdminMenu {
 
@@ -59,34 +60,33 @@ public class AdminMenu {
 			e.printStackTrace();
 		}
 	}
-    
-	// public void generateReports() {
-	// ReportSetup setup = new ReportSetup();
-	// setup.reportSetup();
-	// }
-    
-    public void NotifyOffers(){
-        MySQLAccess MSA = new MySQLAccess();
-        ArrayList<Customer> customer = MSA.getAllCustomers();
-        String offertype = null;
-        
-        System.out.println("Select Offer to Broadcast:\n1.10% Discount \n2.25% Discount");
-        try {
-            offertype = reader.readLine();
-            
-        }catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }        
-        switch(offertype)
-        {
-            case "1":
-                Discount10 dis10 = new Discount10();
-                dis10.notifySubscriber(customer, "10% Discount");
-                break;
-            case "2":
-                Discount25 dis25 = new Discount25();
-                dis25.notifySubscriber(customer, "25% Discount");                            
-        }        
-    }
+
+	public void generateReports() {
+		ReportSetup setup = new ReportSetup();
+		setup.reportSetup();
+	}
+
+	public void NotifyOffers() {
+		MySQLAccess MSA = new MySQLAccess();
+		ArrayList<Customer> customer = MSA.getAllCustomers();
+		ArrayList<Driver> driver =  (ArrayList<Driver>) MSA.getAllDrivers();
+		String offertype = null;
+
+		System.out.println("Select Offer to Broadcast:\n1.Customer Offers \n2.Driver Offers");
+		try {
+			offertype = reader.readLine();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		switch (offertype) {
+		case "1":
+			CustomerGroup cg = new CustomerGroup("Customers", customer);
+			break;
+		case "2":
+			DriverGroup dg = new DriverGroup();
+			break;
+		}
+	}
 }
