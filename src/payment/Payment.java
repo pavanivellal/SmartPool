@@ -26,9 +26,7 @@ public abstract class Payment {
 	
 	public double distribute(int no_members)
 	{
-		tot_cost = total_payment();
-		ind_cost = tot_cost / no_members;
-		return ind_cost;
+		return ind_cost = CalPmt.distribute(no_members, tot_cost);
 	}
 	abstract void make_payment();
 	

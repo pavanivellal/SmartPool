@@ -14,8 +14,8 @@ public class Driver extends Member {
 	private String availability;
 	private LicenseDetails licenseDetails;
 	private Vehicle vehicle;
+	private boolean readyToAssist;
 
-	
 	private int X;
 	private int Y;
 
@@ -59,7 +59,12 @@ public class Driver extends Member {
 	public void setY(int y) {
 		Y = y;
 	}
-
+	public void setReadytoAssist(boolean assist) {
+		readyToAssist = assist;
+	}
+	public boolean getReadytoAssist() {
+		return readyToAssist;
+	}
 	@Override
 	public String toString() {
 		String member = super.toString();

@@ -2,11 +2,11 @@ package ride;
 
 import java.util.Scanner;
 
-public class EndState implements StateInterface {
+public class EndState implements iState {
 
-	RideInterface ride;
+	iRide ride;
 	
-	public EndState(RideInterface r) {
+	public EndState(iRide r) {
 		
 		ride = r;
 	}

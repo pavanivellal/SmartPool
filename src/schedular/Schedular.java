@@ -1,9 +1,10 @@
 package schedular;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Queue;
 import java.util.Scanner;
-
 import DAO.MySQLAccess;
 import membership.Driver;
 import notification.CustomerNotification;
@@ -12,14 +13,11 @@ import notification.Message;
 import notification.NotificationCenter;
 import payment.CalculatePayment;
 import payment.CardPayment;
-import payment.ClosedParking;
 import payment.EconomyCar;
 import payment.EstimatePayment;
 import payment.OnlinePayment;
-import payment.OpenParking;
 import payment.Parking;
 import payment.Payment;
-import payment.LuxuryCar;
 import request.AddVehicleType;
 import request.Location;
 import request.ProvideAssistance;
@@ -28,20 +26,27 @@ import request.SimpleRequest;
 import ride.CancelState;
 import ride.DelayedState;
 import ride.Ride;
-import route.Utility;
 import route.RoutingContext;
+import route.Utility;
 
-public class Schedular implements SchedularInterface {
+public class Schedular implements iSchedular {
 
 	Request req;
 	private Queue reqQueue = new LinkedList();
 	private Queue matchingReqQueueLocation = new LinkedList();
 	private Queue matchingReqQueueCarType = new LinkedList();
+	private Queue matchedReqQueue = new LinkedList();
+	Scanner keyboard = new Scanner(System.in);
+	String input = "";
+	String driverName;
+	
+	ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
 
 	MappingStrategy mapStrategy;
 
-	public Schedular() {
-		// TODO Auto-generated constructor stub
+	public Schedular(Queue reqQueue, String driverName) {
+		this.reqQueue = reqQueue;
+		this.driverName = driverName;
 	}
 
 	public Request removeElementFromQueue() {
@@ -51,133 +56,138 @@ public class Schedular implements SchedularInterface {
 	public Queue getReqQueue() {
 		return reqQueue;
 	}
+	
+	@Override
+	public void scheduleRide() {	
 
-	public void recieveRequest() {
-
-		SimpleRequest req = new SimpleRequest();
-		req.acceptSource();
-		req.acceptDestination();
-		//req.acceptDateAndTime();
-		req.acceptCarType();
-		req.acceptUserName();
-		reqQueue.add(req);
+		/*
+		 * EstimatePayment estimate = new EstimatePayment(3,2,"Luxury");
+		 * estimate.cost_for_distance();
+		 * 
+		 * DoPayment(3, 25, "Luxury");
+		 */
 		
-		SimpleRequest req2 = new SimpleRequest();
-		req2.acceptSource();
-		req2.acceptDestination();
-		//req.acceptDateAndTime();
-		req2.acceptCarType();
-		req2.acceptUserName();
-		reqQueue.add(req2);
-		
-		/*SimpleRequest req3 = new SimpleRequest();
-		req3.acceptSource();
-		req3.acceptDestination();
-		//req.acceptDateAndTime();
-		req3.acceptCarType();
-		req3.acceptUserName();
-		reqQueue.add(req3);
-		
-		//req.setUserName(userName);
-		//reqQueue.add(req);
-
-		/*AddVehicleType vehicleType = new AddVehicleType(req);
-		vehicleType.acceptCarType();*/
-
-		/*ProvideAssistance assistance = new ProvideAssistance(req);
-		assistance.provideNeededAssistance();*/
-
-		//reqQueue.add(req);
-
-		/*EstimatePayment estimate = new EstimatePayment(3,2,"Luxury");
-		estimate.cost_for_distance();
-		
-        DoPayment(3, 25, "Luxury");*/
 		MySQLAccess db = new MySQLAccess();
-		 
-		DriverAndRequestMapping map1 = new DriverAndRequestMapping();
-		map1.MapDriverAndRequest(reqQueue,db.getAllDrivers());
+
+		MappingContext mappingCtx = new MappingContext();
+
+		HashMap<String,Queue> hm = new HashMap<>();
 		
-	/*	MappingContext mappingCtx = new MappingContext();
-
-		mapStrategy = mappingCtx.setMappingStrategy("cartype", reqQueue);
-		matchingReqQueueCarType = mapStrategy.MapDriverAndRequest(reqQueue);
-
-		mapStrategy = mappingCtx.setMappingStrategy("location", reqQueue);
-		matchingReqQueueLocation = mapStrategy.MapDriverAndRequest(reqQueue);*/
-
-		/*Ride ride = new Ride();
-		ride.initiateRide();
-		int choice;
-		Scanner keyboard = new Scanner(System.in);
-		String input = "";
-
-		do {
-			System.out.println("\n");
-			System.out.println("1.Start Ride.. ");
-			System.out.println("2.Notify customer about the ride cancelation..");
-			System.out.println("3.Notify customer about the delay.. ");
-			System.out.println("4.End Ride..");
-			System.out.println("5.Exit..");
-
+		if (checkAssistanceNeed(reqQueue)) {
+			hm = (HashMap<String, Queue>) mappingCtx.MapDriverAndRequest("assistanceNeeded", reqQueue, 
+										 					 db.getAllDrivers(), driverName);
+		} else {
+			hm = (HashMap<String, Queue>) mappingCtx.MapDriverAndRequest("assistanceNotNeeded", reqQueue,
+															db.getAllDrivers(), driverName);
+		}
+		
+		if(hm.containsKey(driverName)){
+		matchedReqQueue = hm.get(driverName);
+		if (matchedReqQueue.size() >= 2) {
+			System.out.println("\n Do you want to accept the ride?");
 			input = keyboard.nextLine();
+			if (input.equalsIgnoreCase("y")) {
 
-			choice = Integer.parseInt(input);
+				//Notify Customers about request acceptance
+				NotifyRideAcceptance(matchedReqQueue);				
+				Ride ride = new Ride(matchedReqQueue);
+				ride.initiateRide();
+				int choice;
 
-			ride.waitingRide(choice);
+				do {
+					System.out.println("\n");
+					System.out.println("\n ************Driver Menu*********");
+					System.out.println("1.Start Ride ");
+					System.out.println("2.Notify customer about the car cancelation due to failed car");
+					System.out.println("3.Notify customer about the delay ");
+					System.out.println("4.End Ride");
+					
+					System.out.println("\n ************Customer Menu*********!");
+					System.out.println("5.Track the ride.");
+					System.out.println("0.Back to Main menu");
 
-			switch (choice) {
-			case 1:
-				ride.startRide(choice);
-				break;
+					input = keyboard.nextLine();
 
-			case 2:
-				ride.cancelRide(choice);
-				break;
+					choice = Integer.parseInt(input);
 
-			case 3:
-				ride.delayRide(choice);
-				break;
+					ride.waitingRide(choice);
 
-			case 4:
-				ride.endRide(choice);
-				break;
+					switch (choice) {
+					case 1:
+						ride.startRide(choice);
+						break;
 
-			case 5:
-				break;
+					case 2:
+						ride.cancelRide(choice);
+						break;
 
-			default:
-				break;
+					case 3:
+						ride.delayRide(choice);
+						break;
+
+					case 4:
+						ride.endRide(choice);
+						break;
+
+					/*case 5:
+						 System.out.println("Current ride state is : " + ride.getStateName());
+						 break;*/
+						 
+					case 0:break;
+						
+					default:
+						break;
+					}
+				} while (choice != 0);
 			}
-		} while (choice != 5);*/
+
+		} else {
+			
+			System.out.println("\n Sorry! No requests are currently matchign with you!");
+		}
+		}
+	}
+	
+	
+	private boolean checkAssistanceNeed(Queue reqQueue){		
+		listIterator = (ListIterator<Request>) reqQueue.iterator();
+		boolean flag = false;
+		while(listIterator.hasNext()){
+			Request req = listIterator.next();
+			if(req.getAssistanceNeed()){
+				flag = true;
+			}
+		}					
+		return flag;	
 	}
 
-	public void NotifyCustomer(Request req) {
+	private void NotifyRideAcceptance(Queue reqQueue){
+		
+	   listIterator = (ListIterator<Request>) reqQueue.iterator();
+		while(listIterator.hasNext()){
+			SimpleRequest req = (SimpleRequest) listIterator.next();
+			NotifyCustomer(req);
+		}		
+	}
+	
+
+	public void NotifyCustomer(SimpleRequest req) {
 
 		NotificationCenter notify;
 		Message message;
 
 		message = new EmailNotification();
-		notify = new CustomerNotification(message, "Request Approved for customer: ");
+		notify = new CustomerNotification(message, "Dear" + req.getUserName() + ", "
+				 + "Your Ride Request has been Approved!"
+				 + "\n Ride Details =>" 
+				 + "\n Date and Time: " + req.getDateTime()
+				 + "\n Drive Name: " + req.getDriverID()
+				 + "\n Pick up point: " 
+				 + "\n Fare Estimation: " + req.getFare() 
+				 +"\nDriver will wait only upto" + "" + " mins!");
+		notify.memberNotification();
 	}
 
-	@Override
-	public boolean acceptedByDriver(Request req) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean acceptedByCustomer(Request req) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Ride createRide(Request req) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public void FindClosestCustomers() {
 
@@ -200,119 +210,81 @@ public class Schedular implements SchedularInterface {
 		int optimalRoute = rc.route(source, destination);
 		System.out.println(optimalRoute);
 	}
-	
-	public void DoPayment(int no_of_memb, double dist, String carType)
-	{
-			
-			System.out.println("Enter no. of members, distance in miles, CarType");
-			
-			Scanner scan = new Scanner(System.in);
-			double park_hrs;
-			String parkType;
-			
-			Payment pay1, pay2;
-			CalculatePayment Typ1, Typ2, Typ3;
-			CardPayment c1;
-			OnlinePayment op1;
-			Parking prk;
-			
-			
-			
-			if (carType.equalsIgnoreCase("Economy"))
-			{
-				
-				Typ1 = new EconomyCar(dist,no_of_memb);
-				Typ1.cost_for_distance();
-				System.out.println("Specify Parking Type\n1.Covered\n2.Open");
-				parkType = scan.next();
-				System.out.println("Specify Parking Hours?");
-				park_hrs  = scan.nextDouble();
-				switch(parkType)
-				{
-				case "Covered":
-				case "1":
-					OpenParking p1 = new OpenParking(Typ1,no_of_memb);
-					p1.addCharges(park_hrs);
-					break;
-					
-				case "Open":
-				case "2":
-					ClosedParking p2 = new ClosedParking(Typ1,no_of_memb);
-					p2.addCharges(park_hrs);
-					break;				
-					
-				default: 
-					System.out.println("\nIncorrect Option. Payment not made");
-					break;			
-				}
-				
-				System.out.println("Choose Payment options:\n1.Card Payment \n2.Online Payment");
-				String pay_type = scan.next();
-				if(pay_type.equals("1") || pay_type.equalsIgnoreCase("Card Payment") )
-				{
-					c1 = new CardPayment(Typ1, no_of_memb);
-					c1.make_payment();
-					
-				}
-				else if (pay_type.equals("2") || pay_type.equals("Online Payment"))
-				{
-					op1 = new OnlinePayment(Typ1, no_of_memb);
-					op1.make_payment();
-				}
-				else
-				{
-					System.out.println("\nIncorrect Option");
-				}
-				
-				
-			}
-			
-			else if (carType.equalsIgnoreCase("Luxury"))
-			{
-				Typ2 = new EconomyCar(dist,no_of_memb);
-				Typ2.cost_for_distance();
-				System.out.println("Specify Parking Type\n1.Covered\n2.Open");
-				parkType = scan.next();
-				System.out.println("Specify Parking Hours?");
-				park_hrs  = scan.nextDouble();
-				switch(parkType)
-				{
-				case "Covered":
-				case "1":
-					OpenParking p1 = new OpenParking(Typ2,no_of_memb);
-					p1.addCharges(park_hrs);
-					break;
-					
-				case "Open":
-				case "2":
-					ClosedParking p2 = new ClosedParking(Typ2,no_of_memb);
-					p2.addCharges(park_hrs);
-					break;				
-					
-				default: 
-					System.out.println("\nIncorrect Option. Payment not made");
-					break;			
-				}
-				
-				System.out.println("Choose Payment options:\n1.Card Payment \n2.Online Payment");
-				String pay_type = scan.next();
-				if(pay_type.equals("1") || pay_type.equalsIgnoreCase("Card Payment") )
-				{
-					c1 = new CardPayment(Typ2, no_of_memb);
-					c1.make_payment();
-					
-				}
-				else if (pay_type.equals("2") || pay_type.equals("Online Payment"))
-				{
-					op1 = new OnlinePayment(Typ2, no_of_memb);
-					op1.make_payment();
-				}
-				else
-				{
-					System.out.println("\nIncorrect Option");
-				}
 
-				
+	public void DoPayment(int no_of_memb, double dist, String carType) {
+
+		System.out.println("Enter number of members, distance in miles, CarType");
+
+		Scanner scan = new Scanner(System.in);
+		double park_hrs;
+		String parkType;
+
+		Payment pay1, pay2;
+		CalculatePayment Typ1, Typ2, Typ3;
+		CardPayment c1;
+		OnlinePayment op1;
+		double tot_ind_cost;
+
+		if (carType.equalsIgnoreCase("Economy")) {
+
+			Typ1 = new EconomyCar(dist, no_of_memb);
+			Typ1.cost_for_distance();
+			System.out.println("Specify Parking Type\n1.Covered\n2.Open");
+			parkType = scan.next();
+			System.out.println("Specify Parking Hours?");
+			park_hrs = scan.nextDouble();
+			
+			Parking prk = new Parking(parkType, park_hrs, 3, Typ1.tot_cost);
+			tot_ind_cost = Typ1.ind_cost + prk.getParkingVal();
+			System.out.println("Total cost with parking per individual : " + tot_ind_cost);
+
+			System.out.println("Choose Payment options:\n1.Card Payment \n2.Online Payment");
+			String pay_type = scan.next();
+			if (pay_type.equals("1") || pay_type.equalsIgnoreCase("Card Payment")) {
+				c1 = new CardPayment(Typ1, no_of_memb);
+				c1.make_payment();
+
+			} else if (pay_type.equals("2") || pay_type.equals("Online Payment")) {
+				op1 = new OnlinePayment(Typ1, no_of_memb);
+				op1.make_payment();
+			} else {
+				System.out.println("\nIncorrect Option");
 			}
+		}
+
+		else if (carType.equalsIgnoreCase("Luxury")) {
+			Typ2 = new EconomyCar(dist, no_of_memb);
+			Typ2.cost_for_distance();
+			System.out.println("Specify Parking Type\n1.Covered\n2.Open");
+			parkType = scan.next();
+			System.out.println("Specify Parking Hours?");
+			park_hrs = scan.nextDouble();
+			Parking prk = new Parking(parkType, park_hrs, 3, Typ2.tot_cost);
+			tot_ind_cost = Typ2.ind_cost + prk.getParkingVal();
+			System.out.println("Total cost with parking per individual : " + tot_ind_cost);
+
+			System.out.println("Choose Payment options:\n1.Card Payment \n2.Online Payment");
+			String pay_type = scan.next();
+			if (pay_type.equals("1") || pay_type.equalsIgnoreCase("Card Payment")) {
+				c1 = new CardPayment(Typ2, no_of_memb);
+				c1.make_payment();
+
+			} else if (pay_type.equals("2") || pay_type.equals("Online Payment")) {
+				op1 = new OnlinePayment(Typ2, no_of_memb);
+				op1.make_payment();
+			} else {
+				System.out.println("\nIncorrect Option");
+			}
+
+		}
 	}
+
+	private void displayRide(Ride r) {
+
+		// System.out.println(r.);
+	}
+
+	
+
+	
 }

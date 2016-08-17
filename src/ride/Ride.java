@@ -1,81 +1,34 @@
 package ride;
 
-public class Ride implements RideInterface {
+import java.util.ListIterator;
+import java.util.Queue;
 
-	private StateInterface state;
+import request.Location;
+import request.Request;
+import request.SimpleRequest;
+
+public class Ride implements iRide {
+
+	private iState state;
 	private static int id;
-	private int customer1_id;
-	private int customer2_id;
-	private int customer3_id;
+	private int[] customer_ids = new int[3];
 	private int driver_id;
 	private String status;
 	private String start_time;
 	private String end_time;
 	private double fare;
+	private Location srcLocation;
+	private Location destLocation;
+	private String stateName;
 	
 	
-	public Ride() {
-		state = new InitiatedState(this);	
-		id++;
-	}
-
-	@Override
-	public void initiateRide() {
-		System.out.println(state.initiateRide());
-	}
-	
-	@Override
-	public void startRide(int choice) {
-		System.out.println(state.startRide(choice));
-	}
-
-	@Override
-	public void waitingRide(int choice) {
-		System.out.println(state.waitingRide(choice));		
-	}
-
-	@Override
-	public void delayRide(int choice) {
-		System.out.println(state.delayRide(choice));		
-	}
-
-	@Override
-	public void endRide(int choice) {
-		System.out.println(state.endRide(choice));			
-	}
-
-	@Override
-	public void cancelRide(int choice) {
-		System.out.println(state.cancelRide(choice));				
-	}
-
-	@Override
-	public void setState(StateInterface s) {
-		state = s;	
-	}
-
-	@Override
-	public StateInterface getState() {
+	public Ride(Queue matchedReqAndDriverQueue) {
+		state = new InitiatedState(this);
 		
-		return state;
-	}
-
-	public int getRideID(){
-		return id;
+		setParams(matchedReqAndDriverQueue);
+		id++;	
 	}
 	
-	public void setCustomer1_id(int id){
-		customer1_id = id;
-	}
-	
-	public void setCustomer2_id(int id){
-		customer2_id = id;
-	}
-	
-	public void setCustomer3_id(int id){
-		customer3_id = id;
-	}
-
 	public static int getId() {
 		return id;
 	}
@@ -84,12 +37,28 @@ public class Ride implements RideInterface {
 		Ride.id = id;
 	}
 
+	public int[] getCustomer_ids() {
+		return customer_ids;
+	}
+
+	public void setCustomer_ids(int[] customer_ids) {
+		this.customer_ids = customer_ids;
+	}
+
 	public int getDriver_id() {
 		return driver_id;
 	}
 
 	public void setDriver_id(int driver_id) {
 		this.driver_id = driver_id;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getStart_time() {
@@ -108,38 +77,107 @@ public class Ride implements RideInterface {
 		this.end_time = end_time;
 	}
 
-	public double getFare() {
-		return fare;
+	public Location getSrcLocation() {
+		return srcLocation;
 	}
 
-	public void setFare(double d) {
-		this.fare = d;
+	public void setSrcLocation(Location srcLocation) {
+		this.srcLocation = srcLocation;
 	}
 
-	public int getCustomer1_id() {
-		return customer1_id;
+	public Location getDestLocation() {
+		return destLocation;
 	}
 
-	public int getCustomer2_id() {
-		return customer2_id;
+	public void setDestLocation(Location destLocation) {
+		this.destLocation = destLocation;
 	}
 
-	public int getCustomer3_id() {
-		return customer3_id;
+	public void setFare(double fare) {
+		this.fare = fare;
 	}
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
+	private void setParams(Queue matchedReqAndDriverQueue){
+		ListIterator<Request> listIterator = (ListIterator<Request>) matchedReqAndDriverQueue.iterator();
+		int i = 0;
+		while(listIterator.hasNext()){
+			SimpleRequest req = (SimpleRequest) listIterator.next();
+			customer_ids[i++] = req.getCustomerID();	
+			driver_id = req.getDriverID();
+			start_time = req.getDateTime();
+			fare = req.getFare();
+			srcLocation = req.getSource();
+			destLocation = req.getDestination();
+		}		
 	}
 
 	@Override
-	public String toString() {
-		return "Ride details: " +"\n"+ "Ride id: "+ id +", Customer1_id: " + customer1_id + ", Customer2_id: " + customer2_id
-				+ ", Customer3_id: " + customer3_id + ", Driver_id: " + driver_id +  ", Start time: "
-				+ start_time + ", End_time: " + end_time + ", Fare ($): " + fare + ", Status: " + status;
+	public void initiateRide() {
+		System.out.println(state.initiateRide());
+		setStateName("Ride Initiated!");
+	}
+	
+	@Override
+	public void startRide(int choice) {
+		System.out.println(state.startRide(choice));
+		setStateName("Ride Started!");
+	}
+
+	@Override
+	public void waitingRide(int choice) {
+		System.out.println(state.waitingRide(choice));	
+	}
+
+	@Override
+	public void delayRide(int choice) {
+		System.out.println(state.delayRide(choice));
+		setStateName("Ride Delayed!");
+	}
+
+	@Override
+	public void endRide(int choice) {
+		System.out.println(state.endRide(choice));		
+		setStateName("Ride Ended!");
+	}
+
+	@Override
+	public void cancelRide(int choice) {
+		System.out.println(state.cancelRide(choice));	
+		setStateName("Ride Canceled!");
+	}
+
+	@Override
+	public void setState(iState s) {
+		state = s;	
+	}
+
+	@Override
+	public iState getState() {	
+		return state;
+	}
+
+	public int getRideID(){
+		return id;
+	}	
+	
+	public void setEndTime(){
+
+	}
+	public double getFare(){
+		return fare;
+	}
+	public Location getSource() {		
+		return srcLocation;
+	}
+
+	public Location getDestination() {
+		return destLocation;
+	}
+	
+	public void setStateName(String inputStateName){
+		stateName = inputStateName;
+	}
+	public String getStateName(){
+		return stateName;
 	}
 }

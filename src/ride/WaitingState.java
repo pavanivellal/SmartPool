@@ -3,11 +3,11 @@ package ride;
 import java.util.Scanner;
 
 
-public class WaitingState implements StateInterface{
+public class WaitingState implements iState{
 
-	RideInterface ride;
+	iRide ride;
 	
-	public WaitingState(RideInterface r) {
+	public WaitingState(iRide r) {
 		ride = r;
 	}
 	@Override
@@ -18,21 +18,35 @@ public class WaitingState implements StateInterface{
 	@Override
 	public String waitingRide(int choice) {
 		
+
 		switch(choice){
+			
+			
 			case 1: ride.setState(new StartedState(ride));
-					return "";
+					ride.setStateName("Ride Started!");
+					break;
 							
 			case 2: ride.setState(new CancelState(ride));
-					return "";
+					ride.setStateName("Ride Canceled!");
+					break;
 							
 			case 3: ride.setState(new DelayedState(ride));
-					return "";
+					ride.setStateName("Ride Delayed!");
+					break;
 			
 			case 4: ride.setState(new EndState(ride));
-					return "";
+					ride.setStateName("Ride Ended!");
+					break;
 			
-			default: return "waiting for user input!";
-		}				
+			case 5: System.out.println("Current ride state is : " + ride.getStateName());
+					break;
+			
+			case 0: System.exit(0);
+			
+			default: System.out.println("Waiting for user input!");
+					break;
+		}
+		return null;			
 	}
 	
 	@Override

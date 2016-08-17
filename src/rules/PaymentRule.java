@@ -10,14 +10,14 @@ public class PaymentRule {
 	
 	MySQLAccess mySQLAccess=new MySQLAccess();
 	
-	public double parkingPayment(){
+	public double getRule1(){
 		
 		double pricePerHour=mySQLAccess.getCarFare();
 		
 		return pricePerHour;
 	}
 	
-	public double carPayment(){
+	public double getRule2(){
 		
 		double pricePerMile=mySQLAccess.getParkingFare();
 		

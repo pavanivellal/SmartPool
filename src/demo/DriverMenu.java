@@ -370,12 +370,12 @@ public class DriverMenu {
 			System.out.println("Color :");
 			updatedCar.setColor(reader.readLine());
 
-			System.out.println("Model (1.	Economy/ 2.	Luxury): ");
+			System.out.println("Model (1. Five seater/ 2. Eight seater): ");
 			int carModel = Integer.parseInt(reader.readLine());
 			if (carModel == 2) {
-				updatedCar.setModel("Luxury");
+				updatedCar.setModel("Eight seater");
 			} else
-				updatedCar.setModel("Economy");
+				updatedCar.setModel("Five seater");
 
 			driver.setVehicle(updatedCar);
 			

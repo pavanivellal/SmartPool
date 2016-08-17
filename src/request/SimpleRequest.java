@@ -8,6 +8,7 @@ public class SimpleRequest extends Request {
 	private int customerID;
 	private int driverID;
 	private String userName;
+	private double fare;
 	
 	enum carType{
 		Sedan,
@@ -27,9 +28,36 @@ public class SimpleRequest extends Request {
 	public Location getDestination() {
 		return destLocation;
 	}
-
+	
 	public String getDateTime() {
 		return dateTime;
+	}
+	public void setCustomerID(int id){
+		this.customerID = id;
+	}
+	public void setDriverID(int id){
+		this.driverID = id;
+	}
+	public int getCustomerID(){
+		return this.customerID;
+	}
+	public int getDriverID(){
+		return this.driverID;
+	}
+	public String getCarType(){
+		return this.carTyp.toString();
+	}
+	public void setUserName(String userName){
+		this.userName = userName;
+	}
+	public String getUserName(){
+		return this.userName;
+	}
+	public void setFare(double fare){
+		this.fare = fare;
+	}
+	public double getFare(){
+		return this.fare;
 	}
 
 	public void acceptSource() {
@@ -88,27 +116,6 @@ public class SimpleRequest extends Request {
 		loc = getDestination();
 		System.out.println("Destination: " + loc.getX() + "," + loc.getY());
 		System.out.println("Date and Time: " + getDateTime());
-	}
+	}	
 	
-	public void setCustomerID(int id){
-		this.customerID = id;
-	}
-	public void setDriverID(int id){
-		this.driverID = id;
-	}
-	public int getCustomerID(){
-		return this.customerID;
-	}
-	public int getDriverID(){
-		return this.driverID;
-	}
-	public String getCarType(){
-		return this.carTyp.toString();
-	}
-	public void setUserName(String _userName){
-		userName = _userName;
-	}
-	public String getUserName(){
-		return userName;
-	}
 }

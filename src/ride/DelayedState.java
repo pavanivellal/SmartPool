@@ -1,10 +1,10 @@
 package ride;
 
-public class DelayedState implements StateInterface {
+public class DelayedState implements iState {
 
-	RideInterface ride;
+	iRide ride;
 	
-	public DelayedState(RideInterface r) {
+	public DelayedState(iRide r) {
 	  ride = r;
 	}
 

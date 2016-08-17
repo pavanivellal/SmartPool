@@ -19,7 +19,6 @@ import membership.Customer;
 import membership.Driver;
 import membership.LicenseDetails;
 import payment.CalculatePayment;
-import payment.OpenParking;
 import payment.Parking;
 import ride.Ride;
 import vehicle.Car;
@@ -995,12 +994,12 @@ public class MySQLAccess {
 
 			ResultSet rs = preparedStatement.executeQuery(getAllRides);
 			while (rs.next()) {
-				Ride ride = new Ride();
+				Ride ride = new Ride(null);
 				Ride.setId(rs.getInt("id"));
 				ride.setDriver_id(rs.getInt("driver_id"));
-				ride.setCustomer1_id(rs.getInt("cust1_id"));
-				ride.setCustomer2_id(rs.getInt("cust2_id"));
-				ride.setCustomer3_id(rs.getInt("cust3_id"));
+//				ride.setCustomer1_id(rs.getInt("cust1_id"));
+//				ride.setCustomer2_id(rs.getInt("cust2_id"));
+//				ride.setCustomer3_id(rs.getInt("cust3_id"));
 				ride.setStart_time(rs.getString("start_time"));
 				ride.setEnd_time(rs.getString("end_time"));
 				ride.setFare(rs.getDouble("fare"));

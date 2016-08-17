@@ -3,6 +3,10 @@ package demo;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import org.omg.CORBA.Request;
 
 import DAO.MySQLAccess;
 import membership.Customer;
@@ -12,6 +16,8 @@ import membership.LicenseDetails;
 import membership.MemberShip;
 import payment.CardPayment;
 import report.ReportSetup;
+import request.ProvideAssistance;
+import request.SimpleRequest;
 import schedular.Schedular;
 import vehicle.Car;
 import vehicle.Vehicle;
@@ -23,6 +29,8 @@ public class Menu {
 	private DriverMenu driverMenu = new DriverMenu();
 	private CustomerMenu customerMenu = new CustomerMenu();
 	private Driver driver = new Driver();
+	Request req;
+	private Queue reqQueue = new LinkedList();
 
 	public Menu() {
 		while (true)
@@ -120,8 +128,8 @@ public class Menu {
 						customerMenu.deleteCustomer();
 						break;
 					case 5:
-                            Schedular schedular = new Schedular();
-                            schedular.recieveRequest();
+						System.out.println("\nDear Customer, Please enter request details:"); 
+						   requestRide();	
 						break;
 					case 6:
 						break;
@@ -137,9 +145,7 @@ public class Menu {
 						break;
 					}
 				}
-
 			}
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -202,8 +208,10 @@ public class Menu {
 						}
 						break;
 					case 6:
-                         Schedular sc = new Schedular();
-                         sc.recieveRequest();
+                            System.out.println("Enter your user name : ");
+                            String inputName = Client.getReader().readLine();
+                            Schedular sc = new Schedular(reqQueue,inputName);
+                            sc.scheduleRide();
 						break;
 					case 7:
 
@@ -272,4 +280,17 @@ public class Menu {
 			e.printStackTrace();
 		}
 	}
+    
+    public void requestRide(){
+        
+        SimpleRequest req = new SimpleRequest();
+        req.acceptUserName();
+        req.acceptSource();
+        req.acceptDestination();
+        req.acceptDateAndTime();
+        req.acceptCarType();
+        ProvideAssistance assistance = new ProvideAssistance(req);
+        assistance.checkAssistaceNeeded();
+        reqQueue.add(req);		
+    }
 }

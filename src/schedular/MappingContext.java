@@ -1,5 +1,6 @@
 package schedular;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -8,22 +9,27 @@ public class MappingContext {
 	private MappingStrategy mapSt;
 	private Queue reqQueue = new LinkedList();
 	
+	public MappingContext(){
+		
+	}
+	
 	public MappingStrategy setMappingStrategy(String str, Queue reqQueue) { 	
 		
-		if(str == "cartype"){
-			mapSt = new MapVehicleType();
+		if(str == "assistanceNeeded"){
+			mapSt = new MapAssistanceNeed();
 		} 
-		else if(str == "location"){
+		else if(str == "assistanceNotNeeded"){
 			mapSt = new MapLocation();
 		}	
 		return mapSt;
 	}
 	
-	public Queue MapDriverAndRequest(String str, Queue reqQueue){
+	public HashMap<String,Queue> MapDriverAndRequest(String strategy, Queue reqQueue, Queue driverQueue, String driverName){
 		
-		mapSt = setMappingStrategy(str,reqQueue);
-		reqQueue = mapSt.MapDriverAndRequest(reqQueue);
-		return reqQueue;
+		HashMap<String,Queue> hm;
+		mapSt = setMappingStrategy(strategy,reqQueue);
+		hm = mapSt.MapDriverAndRequest(reqQueue,driverQueue,driverName);
+		return hm;
 	}
 
 }

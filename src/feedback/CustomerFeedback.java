@@ -21,6 +21,7 @@ public class CustomerFeedback extends FeedBack {
 
 	@Override
 	public void displayFeedback() {
-		// TODO Auto-generated method stub
+		String feedbackBody = super.toString();
+		System.out.println("CustomerFeedback:"+"\n"+feedbackBody+ ", Was car clean?" + wasCarClean);
 	}
 }

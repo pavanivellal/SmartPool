@@ -1,7 +1,7 @@
 package feedback;
 
 public abstract class FeedBack {
-	private String comment;
+	protected String comment;
 	int rating;
 
 	public int getRating() {
@@ -20,5 +20,10 @@ public abstract class FeedBack {
 		this.comment = comment;
 	}
 		
+	@Override
+	public String toString() {
+		return "Comment: " + comment + ", Rating:" + rating ;
+	}
+
 	abstract public void displayFeedback();
 }

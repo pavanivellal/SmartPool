@@ -20,8 +20,7 @@ public class DriverFeedback extends FeedBack {
 
 	@Override
 	public void displayFeedback() {
-		// TODO Auto-generated method stub
-
+		String feedbackBody = super.toString();
+		System.out.println("DustomerFeedback:"+"\n"+feedbackBody+ ", Was customer on time" + wasCustomerOnTime);
 	}
-
 }

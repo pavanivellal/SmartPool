@@ -6,6 +6,13 @@ public class ProvideAssistance extends RequestDecorator {
 		super(request);
 	}
 
+	public void checkAssistaceNeeded() {		
+		System.out.println("Do you need an assistance? ( Y / N ) ");
+		input = keyboard.nextLine();
+        if(input.equalsIgnoreCase("y")){
+        	provideNeededAssistance();
+        }
+	}
 	public void provideNeededAssistance() {
 		/*System.out.println("Do you need assistance because of physical disabilities? ( Y /N )");
 		input = keyboard.nextLine();	*/

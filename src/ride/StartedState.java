@@ -2,10 +2,10 @@ package ride;
 
 import java.util.Scanner;
 
-public class StartedState implements StateInterface{
+public class StartedState implements iState{
 
-	private RideInterface ride;
-	public StartedState(RideInterface r) {
+	private iRide ride;
+	public StartedState(iRide r) {
 		ride = r;
 	}
 

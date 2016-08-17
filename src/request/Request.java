@@ -9,7 +9,7 @@ public abstract class Request {
 	String input = "";
 	String[] numbersStr;
 	boolean _isAssistanceNeeded = false;
-
+	
 	public Request() {
 		 reqId++;
 	}
@@ -24,4 +24,7 @@ public abstract class Request {
 		this._isAssistanceNeeded = isAssistanceNeeded;
 	}
 	
+	public boolean getAssistanceNeed(){
+		return this._isAssistanceNeeded;
+	}
 }
