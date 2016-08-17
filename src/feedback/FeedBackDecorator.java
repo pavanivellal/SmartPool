@@ -7,6 +7,9 @@ public abstract class FeedBackDecorator extends FeedBack {
 		this.feedBack = feedback;
 	}
 	
+	/**
+	 * Displays the feedback
+	 */
 	public void displayFeedback(){
 		feedBack.displayFeedback();
 	}

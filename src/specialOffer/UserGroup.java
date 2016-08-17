@@ -8,6 +8,4 @@ public interface UserGroup {
 	
 	void update();
 	
-	
-	
 }

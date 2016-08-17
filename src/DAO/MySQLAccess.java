@@ -36,7 +36,12 @@ public class MySQLAccess {
 	PreparedStatement preparedStatement = null;
 
 	/*--------Customer related methods------*/
-	// Method to add new customer in the database
+	/**
+	 * Method to add new customer in the database
+	 * 
+	 * @param customer
+	 * @return customer id
+	 */
 	public int addNewCustomer(Customer customer) {
 		int cust_id = 0;
 		int i = 0;
@@ -94,6 +99,13 @@ public class MySQLAccess {
 		return cust_id;
 	}
 
+	/**
+	 * This method takes customer is as parameter and fetches the customer
+	 * information from database and return the Customer object
+	 * 
+	 * @param customerId
+	 * @return customer
+	 */
 	// Method to get the customer details given the customer id
 	public Customer getCustomerById(int customerId) {
 		int custId = customerId;
@@ -146,7 +158,13 @@ public class MySQLAccess {
 		return customer;
 	}
 
-	// Method to get the customer details given the userName
+	/**
+	 * This method takes customer user name as parameter and fetches the
+	 * customer information from database and return the Customer object
+	 * 
+	 * @param customerId
+	 * @return customer
+	 */
 	public Customer getCustomerByUserName(String userName) {
 		String custUName = userName;
 		String getCustomerByUserName = null;
@@ -198,7 +216,12 @@ public class MySQLAccess {
 		return customer;
 	}
 
-	// Method to update the customer using userName
+	/**
+	 * This method takes customer object as input and updated the related fields
+	 * into the database
+	 * 
+	 * @param customer
+	 */
 	public void updateCustomer(Customer customer) {
 
 		String customerUpdate = null;
@@ -244,6 +267,12 @@ public class MySQLAccess {
 		}
 	}
 
+	/**
+	 * This method takes customer object as input and deletes that specific
+	 * customer from the database
+	 * 
+	 * @param c
+	 */
 	// Method to delete the customer details given the customer id
 	public void deleteCustomer(Customer c) {
 
@@ -281,6 +310,11 @@ public class MySQLAccess {
 		}
 	}
 
+	/**
+	 * This method returns the list of all the customers in the database
+	 * 
+	 * @return
+	 */
 	// Method to get all the customers
 	public ArrayList<Customer> getAllCustomers() {
 		String getAllCustomers = null;
@@ -334,7 +368,17 @@ public class MySQLAccess {
 		return customerList;
 	}
 
-	// Method to add customer feedback about driver
+	/**
+	 * Method takes
+	 * 
+	 * @param feedback
+	 * @param cust_id
+	 * @param driver_id
+	 * @param customereRecommendation
+	 * @param customerComplain
+	 *            these parameters as customer feedback and saves that into the
+	 *            database.
+	 */
 
 	public void addCustomerFeedback(CustomerFeedback feedback, int cust_id, int driver_id,
 			Recommendation customereRecommendation, Complain customerComplain) {
@@ -368,9 +412,7 @@ public class MySQLAccess {
 		} catch (Exception e) {
 			System.out.println("Problem occured while adding feedback");
 			e.printStackTrace();
-		}
-
-		finally {
+		} finally {
 			try {
 				preparedStatement.close();
 				dbConnection.close();
@@ -378,10 +420,17 @@ public class MySQLAccess {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	/*---------------Driver related methods------------*/
+
+	/**
+	 * This method takes driver as input parameter and saves the data into the
+	 * database
+	 * 
+	 * @param driver
+	 * @return id
+	 */
 	// Method to add new driver in the database
 	public int addNewDriver(Driver driver) {
 		int driver_id = 0;
@@ -451,7 +500,13 @@ public class MySQLAccess {
 		return driver_id;
 	}
 
-	// Method to get the customer details given the customer id
+	/**
+	 * Method to get the driver details given the customer id
+	 * 
+	 * @param driverId
+	 * @return driver
+	 */
+
 	public Driver getDriverById(int driverId) {
 		int custId = driverId;
 		String getDriverById = null;
@@ -516,7 +571,13 @@ public class MySQLAccess {
 		return driver;
 	}
 
-	// Method to get driver information by userName
+	/**
+	 * Method to get driver information by userName
+	 * 
+	 * @param userName
+	 * @return driver
+	 */
+
 	public Driver getDriverByUserName(String userName) {
 		String driverUName = userName;
 		String getDriverByUserName = null;
@@ -582,7 +643,11 @@ public class MySQLAccess {
 		return driver;
 	}
 
-	// Method to retrieve all the drivers
+	/**
+	 * Method to retrieve all the drivers from database
+	 * 
+	 * @return queue
+	 */
 	public Queue getAllDrivers() {
 		String getAllDrivers = null;
 		Connection dbConnection = null;
@@ -648,7 +713,12 @@ public class MySQLAccess {
 		return driverQueue;
 	}
 
-	// Method to update the driver using userName
+	/**
+	 * Method to update the driver information given userName
+	 * 
+	 * @param driver
+	 */
+
 	public void updateDriverCard(Driver driver) {
 
 		String driverUpdate = null;
@@ -670,15 +740,12 @@ public class MySQLAccess {
 					+ "cvv=? " + "where username=? ";
 
 			preparedStatement = dbConnection.prepareStatement(driverUpdate);
-
 			preparedStatement.setString(1, cardDetails.getCardType());
-
 			preparedStatement.setString(2, cardDetails.getCardNumber());
 			preparedStatement.setInt(3, cardDetails.getExpiryMonth());
 			preparedStatement.setInt(4, cardDetails.getExpiryYear());
 			preparedStatement.setInt(5, cardDetails.getCvv());
 			preparedStatement.setString(6, driver.getUserName());
-
 			int i = preparedStatement.executeUpdate();
 		}
 
@@ -696,6 +763,12 @@ public class MySQLAccess {
 		}
 	}
 
+	/**
+	 * Method takes the driver as input parameter and updates the values for the
+	 * car object which is related to the driver
+	 * 
+	 * @param driver
+	 */
 	public void updateDriverVehicle(Driver driver) {
 
 		String driverUpdate = null;
@@ -737,6 +810,10 @@ public class MySQLAccess {
 		}
 	}
 
+	/**
+	 * Method deletes the driver from database given the id of the driver
+	 * @param d
+	 */
 	// Method to delete driver from the database
 	public void deleteDriver(Driver d) {
 
@@ -773,7 +850,15 @@ public class MySQLAccess {
 			}
 		}
 	}
-
+/**
+ * Method takes
+ * @param feedback
+ * @param cust_id
+ * @param driver_id
+ * @param driverRecommendation
+ * @param driverComplain
+ *   these parameters as driver feedback and saves that into the database.
+ */
 	public void addDriverFeedback(DriverFeedback feedback, int cust_id, int driver_id,
 			Recommendation driverRecommendation, Complain driverComplain) {
 
@@ -819,7 +904,12 @@ public class MySQLAccess {
 		}
 
 	}
-    /*-----Methods to fetch rules from database----*/
+
+	/*-----Methods to fetch rules from database----*/
+	/**
+	 * Method return the rate for the parking from the database
+	 * @return price
+	 */
 	public double getParkingFare() {
 
 		String getCustomerById = null;
@@ -858,6 +948,10 @@ public class MySQLAccess {
 		return price;
 	}
 
+	/**
+	 * Method fetches the per mile fare for the specific car type 
+	 * @return price
+	 */
 	public double getCarFare() {
 
 		String getCustomerById = null;
@@ -896,10 +990,14 @@ public class MySQLAccess {
 		return price;
 	}
 
+	/**
+	 * Method fetches the duration from the ride rules
+	 * @return duration
+	 */
 	public int getDuration() {
 
 		String getCustomerById = null;
-		int price = 0;
+		int duration = 0;
 		Connection dbConnection = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -918,7 +1016,7 @@ public class MySQLAccess {
 
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
-				price = rs.getInt("waiting_duration");
+				duration = rs.getInt("waiting_duration");
 			}
 		} catch (Exception e) {
 			System.out.println("Error occured while getting duration information by ID");
@@ -931,13 +1029,16 @@ public class MySQLAccess {
 				e.printStackTrace();
 			}
 		}
-		return price;
+		return duration;
 	}
-
+	/**
+	 * Method fetches the no of maximum customers from the ride rules
+	 * @return maxCustomers
+	 */
 	public int getMaxNumber() {
 
 		String getCustomerById = null;
-		int price = 0;
+		int maxCustomers = 0;
 		Connection dbConnection = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -956,7 +1057,7 @@ public class MySQLAccess {
 
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
-				price = rs.getInt("max_no_of_customers");
+				maxCustomers = rs.getInt("max_no_of_customers");
 			}
 		} catch (Exception e) {
 			System.out.println("Error occured while getting customer number information by ID");
@@ -969,17 +1070,21 @@ public class MySQLAccess {
 				e.printStackTrace();
 			}
 		}
-		return price;
+		return maxCustomers;
 	}
-	
-	  /*-----Methods to fetch all rides from database----*/
-	
+
+	/*-----Methods to fetch all rides from database----*/
+
+	/**
+	 * Method returns the list of rides from the database
+	 * @return rideList
+	 */
 	public ArrayList<Ride> getAllRides() {
 		String getAllRides = null;
 		Connection dbConnection = null;
 		Queue queue = new LinkedList<>();
 		ArrayList<Ride> rideList = new ArrayList<Ride>();
-	
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
@@ -999,9 +1104,9 @@ public class MySQLAccess {
 				Ride.setId(rs.getInt("id"));
 				ride.setDriver_id(rs.getInt("driver_id"));
 				int customer_ids[] = new int[3];
-				customer_ids[0]=rs.getInt("cust1_id");
-				customer_ids[1]=rs.getInt("cust2_id");
-				customer_ids[2]=rs.getInt("cust3_id");
+				customer_ids[0] = rs.getInt("cust1_id");
+				customer_ids[1] = rs.getInt("cust2_id");
+				customer_ids[2] = rs.getInt("cust3_id");
 				ride.setCustomer_ids(customer_ids);
 				ride.setStart_time(rs.getString("start_time"));
 				ride.setEnd_time(rs.getString("end_time"));
@@ -1024,7 +1129,11 @@ public class MySQLAccess {
 		return rideList;
 	}
 
-	  /*-----Methods to fetch all parking records from database----*/
+	/*-----Methods to fetch all parking records from database----*/
+	/**
+	 * Method returns the list of parking record 
+	 * @return parkingList
+	 */
 	public ArrayList<Parking> getAllParking() {
 		String getAllParking = null;
 		Connection dbConnection = null;
@@ -1045,13 +1154,13 @@ public class MySQLAccess {
 
 			ResultSet rs = preparedStatement.executeQuery(getAllParking);
 			while (rs.next()) {
-				Parking parking = new Parking("",0,0,0);
+				Parking parking = new Parking("", 0, 0, 0);
 				parking.setId(rs.getInt("id"));
-				parking.setDriver_id(rs.getInt("driver-id"));	
+				parking.setDriver_id(rs.getInt("driver-id"));
 				parking.setHours(rs.getInt("no_of_hours"));
 				parking.setParkType(rs.getString("type"));
 				parking.setRate_per_hr(rs.getInt("hourly_rate"));
-				parking.setTot_prk_fee(rs.getDouble("total_payment"));	
+				parking.setTot_prk_fee(rs.getDouble("total_payment"));
 				parkingList.add(parking);
 			}
 		} catch (Exception e) {

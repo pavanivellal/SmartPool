@@ -15,6 +15,9 @@ public class EvaluatingState implements MembershipState{
 		return "Application is already received";
 	}
 
+	/**
+	 * Method evaluates the credit card number if its 16 digit memebership is accepted 
+	 */
 	@Override
 	public String qualifyApplicant(Member member) {
 		if (member instanceof Driver) {

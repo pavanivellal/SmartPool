@@ -18,7 +18,9 @@ public class CustomerFeedback extends FeedBack {
 		setRating(rating);
 		setWasCarClean(wasCarClean);
 	}
-
+	/**
+	 * Displays the feedback
+	 */
 	@Override
 	public void displayFeedback() {
 		String feedbackBody = super.toString();

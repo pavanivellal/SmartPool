@@ -23,7 +23,10 @@ public class CustomerMenu {
 	public CustomerMenu() {
 		reader = Client.getReader();
 	}
-
+/**
+ * Method takes all the inputs from customer and creates new customer 
+ * @return Customer
+ */
 	public Customer registration() {
 
 		try {
@@ -119,7 +122,10 @@ public class CustomerMenu {
 		System.out.println("Some problem occured while registration.");
 		return null;
 	}
-
+/**
+ * Method asks for the customer id to search for the customer and returns the customer
+ * @return Customer
+ */
 	public Customer getCustomerById() {
 
 		Customer customer = new Customer();
@@ -137,7 +143,10 @@ public class CustomerMenu {
 		}
 		return customer;
 	}
-
+	/**
+	 * Method asks for the customer uername to search for the customer and returns the customer
+	 * @return Customer
+	 */
 	public Customer getCustomerByUserName() {
 
 		Customer customer = new Customer();
@@ -155,7 +164,9 @@ public class CustomerMenu {
 		}
 		return customer;
 	}
-
+/**
+ * Method asks the customer feedback and saves into the database
+ */
 	public void addCustomerFeedback() {
 		try {
 
@@ -163,7 +174,7 @@ public class CustomerMenu {
 			System.out.println("-----------------------------------------------------------------");
 			System.out.println("Feedback for the recent ride");
 			System.out.println("-----------------------------------------------------------------");
-			
+
 			System.out.println("Enter customer id: ");
 			int cust_id = Integer.parseInt(reader.readLine());
 
@@ -177,15 +188,15 @@ public class CustomerMenu {
 			int rating = Integer.parseInt(reader.readLine());
 
 			Boolean isCarClean;
-			
+
 			System.out.println("Was car clean? (y/n): ");
 			String answer = (reader.readLine());
-		
+
 			if (answer.equalsIgnoreCase("y"))
 				isCarClean = true;
 			else
 				isCarClean = false;
-			
+
 			CustomerFeedback customerFeedback = new CustomerFeedback(comment, rating, isCarClean);
 			Recommendation customereRecommendation = new Recommendation(customerFeedback);
 			Complain customerComplain = new Complain(customerFeedback);
@@ -194,7 +205,7 @@ public class CustomerMenu {
 				System.out.println("1.	Recommendation ");
 				System.out.println("2.	Complain ");
 				int option = Integer.parseInt(reader.readLine());
-				if (option == 1) {		
+				if (option == 1) {
 					customereRecommendation.setRecommended(true);
 					customerComplain.setComplain("");
 					System.out.println("Driver is recommended by you: ");
@@ -208,20 +219,22 @@ public class CustomerMenu {
 					System.out.println("We will get back to you about this complain. ");
 				}
 				MySQLAccess da = new MySQLAccess();
-				da.addCustomerFeedback(customerFeedback,cust_id,driver_id,customereRecommendation,customerComplain);
-				System.out.println("Successfully submitted the feedback.");		
+				da.addCustomerFeedback(customerFeedback, cust_id, driver_id, customereRecommendation, customerComplain);
+				System.out.println("Successfully submitted the feedback.");
 			} else {
 				MySQLAccess da = new MySQLAccess();
 				customereRecommendation.setRecommended(false);
 				customerComplain.setComplain("");
-				da.addCustomerFeedback(customerFeedback,cust_id,driver_id,customereRecommendation,customerComplain);	
+				da.addCustomerFeedback(customerFeedback, cust_id, driver_id, customereRecommendation, customerComplain);
 				System.out.println("Successfully submitted the feedback.");
-			}		
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+/**
+ * Method asks for the customer username and deletes the customer from database
+ */
 	public void deleteCustomer() {
 
 		Customer customer = new Customer();
@@ -230,19 +243,22 @@ public class CustomerMenu {
 			System.out.println("-----------------------------------------------------------------");
 			System.out.println("Enter user name: ");
 			String userName = reader.readLine();
-			
+
 			customer.setUserName(userName);
 			MySQLAccess da = new MySQLAccess();
 
 			da.deleteCustomer(customer);
-			
+
 			System.out.println("Customer is deleted successfully.");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+/**
+ * Method asks for the customer username and update fields. Then updates the fields of customer
+ * @return Customer
+ */
 	public Customer updateCustomer() {
 		Customer customer = new Customer();
 		CardDetails customerCardDetails = new CardDetails();

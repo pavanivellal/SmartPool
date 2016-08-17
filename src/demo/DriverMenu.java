@@ -27,8 +27,8 @@ public class DriverMenu {
 		reader = Client.getReader();
 	}
 	/**
-	 * created by 
-	 * 
+	 * Method takes all the inputs from driver and creates new customer 
+	 * @return Driver
 	 */
 
 	public Driver registration() {
@@ -158,7 +158,10 @@ public class DriverMenu {
 		System.out.println("Some problem occured while registration.");
 		return null;
 	}
-
+	/**
+	 * Method asks for the driver id to search for the driver and returns the driver
+	 * @return Driver
+	 */
 	public Driver getDriverById() {
 
 		Driver driver = new Driver();
@@ -177,7 +180,10 @@ public class DriverMenu {
 		}
 		return driver;
 	}
-
+	/**
+	 * Method asks for the driver uername to search for the customer and returns the driver
+	 * @return Driver
+	 */
 
 	public Driver getDriverByUserName() {
 		Driver driver = new Driver();
@@ -197,6 +203,9 @@ public class DriverMenu {
 		return driver;
 	}
 
+	/**
+	 * Method asks for the driver username and deletes the driver from database
+	 */
 	public void deleteDriver() {
 
 		Driver driver = new Driver();
@@ -217,6 +226,9 @@ public class DriverMenu {
 		}
 	}
 
+	/**
+	 * Method asks the driver feedback and saves into the database
+	 */
 	public void addDriverFeedback() {
 		try {
 			System.out.println();
@@ -298,7 +310,10 @@ public class DriverMenu {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * Method asks for the driver username and update fields. Then updates the fields of driver
+	 * @return Driver
+	 */
 	public Driver updateDriverCard() {
 		Driver driver = new Driver();
 		CardDetails driverCardDetails = new CardDetails();
@@ -352,7 +367,10 @@ public class DriverMenu {
 		System.out.println("Problem while updating driver information.");
 		return null;
 	}
-	
+	/**
+	 * Method asks for the driver username and update fields. Then updates the fields of car
+	 * @return Customer
+	 */
 	public Driver updateDriverCar() {
 		Driver driver = new Driver();
 		Car updatedCar = new Car();

@@ -24,6 +24,9 @@ public class AdminMenu {
 		reader = Client.getReader();
 	}
 
+	/**
+	 * Method displays the list of all customers which are fetched from database
+	 */
 	public void getListOfCustomers() {
 		try {
 			System.out.println("--------------------------------------------------------------");
@@ -44,6 +47,9 @@ public class AdminMenu {
 		}
 	}
 
+	/**
+	 * Method displays the list of all drivers which are fetched from database
+	 */
 	public void getListOfDrivers() {
 		try {
 			System.out.println("--------------------------------------------------------------");
@@ -64,44 +70,49 @@ public class AdminMenu {
 		}
 	}
 
+	/**
+	 * Method generates the reports
+	 */
 	public void generateReports() {
 		ReportSetup setup = new ReportSetup();
 		setup.reportSetup();
 	}
 
-    public void NotifyOffers(){
-        MySQLAccess MSA = new MySQLAccess();
-        ArrayList<Customer> customer = MSA.getAllCustomers();
-        Queue<Driver> driver = MSA.getAllDrivers();
-        String offertype = null;
-        Scanner sc = new Scanner(System.in);
-        
-        System.out.println("Select Offer to Broadcast:\n1.Customer Offers \n2.Driver Offers");
-        try {
-            offertype = reader.readLine();
-            
-        }catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        switch(offertype)
-        {
-            case "1":
-	               CustomerGroup cg = new CustomerGroup("Customers", customer);
-	               CustomerOffers i_co = new CustomerOffers();
-	               i_co.addObservre(cg);
-	               System.out.println("Change customer Discount percentage to:");
-	               double pct = sc.nextDouble();
-	               i_co.setDiscount(pct);
-                break;
-            case "2":
-	               DriverGroup dg = new DriverGroup("Customers", driver);
-	               DriverOffers i_do = new DriverOffers();
-	               i_do.addObservre(dg);
-	               System.out.println("Change Driver Bonus percentage to:");
-	               double pct1 = sc.nextDouble();
-	               i_do.setBonus(pct1);;
-	               break;
-        }
-    }
+	/**
+	 * Method sends the notification to all the users about the 
+	 */
+	public void NotifyOffers() {
+		MySQLAccess MSA = new MySQLAccess();
+		ArrayList<Customer> customer = MSA.getAllCustomers();
+		Queue<Driver> driver = MSA.getAllDrivers();
+		String offertype = null;
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("Select Offer to Broadcast:\n1.Customer Offers \n2.Driver Offers");
+		try {
+			offertype = reader.readLine();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		switch (offertype) {
+		case "1":
+			CustomerGroup cg = new CustomerGroup("Customers", customer);
+			CustomerOffers i_co = new CustomerOffers();
+			i_co.addObservre(cg);
+			System.out.println("Change customer Discount percentage to:");
+			double pct = sc.nextDouble();
+			i_co.setDiscount(pct);
+			break;
+		case "2":
+			DriverGroup dg = new DriverGroup("Drivers", driver);
+			DriverOffers i_do = new DriverOffers();
+			i_do.addObservre(dg);
+			System.out.println("Change Driver Bonus percentage to:");
+			double pct1 = sc.nextDouble();
+			i_do.setBonus(pct1);
+			break;
+		}
+	}
 }

@@ -15,7 +15,9 @@ public class Recommendation extends FeedBackDecorator {
 	public void setRecommended(boolean isRecommended) {
 		this.isRecommended = isRecommended;
 	}
-
+	/**
+	 * Displays the feedback
+	 */
 	@Override
 	public void displayFeedback() {
 		super.displayFeedback();

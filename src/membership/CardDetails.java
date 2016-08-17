@@ -49,8 +49,8 @@ public class CardDetails {
 
 	@Override
 	public String toString() {
-		return "Card type: " + cardType + ", Card number: " + cardNumber + ", Expiry month: " + expiryMonth + ", Expiry year: " + expiryYear + ", CVV: " + cvv;
+		return "Card type: " + cardType + ", Card number: " + cardNumber + ", Expiry month: " + expiryMonth
+				+ ", Expiry year: " + expiryYear + ", CVV: " + cvv;
 	}
-	
 
 }
