@@ -18,8 +18,8 @@ import membership.CardDetails;
 import membership.Customer;
 import membership.Driver;
 import membership.LicenseDetails;
+import parking.Parking;
 import payment.CalculatePayment;
-import payment.Parking;
 import ride.Ride;
 import vehicle.Car;
 import vehicle.Vehicle;
@@ -845,7 +845,7 @@ public class MySQLAccess {
 				price = rs.getDouble("per_mile_fair");
 			}
 		} catch (Exception e) {
-			System.out.println("Error occured while getting customer information by ID");
+			System.out.println("Error occured while getting parking fare information by ID");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -883,7 +883,7 @@ public class MySQLAccess {
 				price = rs.getDouble("per_mile_fair");
 			}
 		} catch (Exception e) {
-			System.out.println("Error occured while getting customer information by ID");
+			System.out.println("Error occured while getting fare information by ID");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -921,7 +921,7 @@ public class MySQLAccess {
 				price = rs.getInt("waiting_duration");
 			}
 		} catch (Exception e) {
-			System.out.println("Error occured while getting customer information by ID");
+			System.out.println("Error occured while getting duration information by ID");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -959,7 +959,7 @@ public class MySQLAccess {
 				price = rs.getInt("max_no_of_customers");
 			}
 		} catch (Exception e) {
-			System.out.println("Error occured while getting customer information by ID");
+			System.out.println("Error occured while getting customer number information by ID");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1010,7 +1010,7 @@ public class MySQLAccess {
 				rideList.add(ride);
 			}
 		} catch (Exception e) {
-			System.out.println("Error in retreiving Customer information by ID");
+			System.out.println("Error in retreiving ride information by ID");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -1025,44 +1025,47 @@ public class MySQLAccess {
 	}
 
 	  /*-----Methods to fetch all parking records from database----*/
-//	public ArrayList<Parking> getAllParking() {
-//		String getAllParking = null;
-//		Connection dbConnection = null;
-//
-//		ArrayList<Parking> parkingList = new ArrayList<Parking>();
-//		try {
-//			Class.forName("com.mysql.jdbc.Driver");
-//		} catch (ClassNotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			System.out.println("Error in connecting to the database");
-//			e1.printStackTrace();
-//		}
-//
-//		try {
-//			dbConnection = DriverManager.getConnection(URL, USER, PASS);
-//			getAllParking = "Select * from parking";
-//			preparedStatement = dbConnection.prepareStatement(getAllParking);
-//
-//			ResultSet rs = preparedStatement.executeQuery(getAllParking);
-//			while (rs.next()) {
-//				
-//				parking.setId(rs.getInt("id"));
-//		
-//				
-//				parkingList.add(parking);
-//			}
-//		} catch (Exception e) {
-//			System.out.println("Error in retreiving Customer information by ID");
-//			e.printStackTrace();
-//		} finally {
-//			try {
-//				preparedStatement.close();
-//				dbConnection.close();
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		return rideList;
-//	}
+	public ArrayList<Parking> getAllParking() {
+		String getAllParking = null;
+		Connection dbConnection = null;
+
+		ArrayList<Parking> parkingList = new ArrayList<Parking>();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			System.out.println("Error in connecting to the database");
+			e1.printStackTrace();
+		}
+
+		try {
+			dbConnection = DriverManager.getConnection(URL, USER, PASS);
+			getAllParking = "Select * from parking";
+			preparedStatement = dbConnection.prepareStatement(getAllParking);
+
+			ResultSet rs = preparedStatement.executeQuery(getAllParking);
+			while (rs.next()) {
+				Parking parking = new Parking("",0,0,0);
+				parking.setId(rs.getInt("id"));
+				parking.setDriver_id(rs.getInt("driver-id"));	
+				parking.setHours(rs.getInt("no_of_hours"));
+				parking.setParkType(rs.getString("type"));
+				parking.setRate_per_hr(rs.getInt("hourly_rate"));
+				parking.setTot_prk_fee(rs.getDouble("total_payment"));	
+				parkingList.add(parking);
+			}
+		} catch (Exception e) {
+			System.out.println("Error in retreiving parking information by ID");
+			e.printStackTrace();
+		} finally {
+			try {
+				preparedStatement.close();
+				dbConnection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return parkingList;
+	}
 }

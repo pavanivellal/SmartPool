@@ -36,9 +36,10 @@ public class Menu {
 		while (true)
 			displayMainMenu();
 	}
-/*
- * Created by shital
- */
+
+	/*
+	 * Created by shital
+	 */
 	private void displayMainMenu() {
 		// This is the main menu for the system
 		System.out.println();
@@ -90,9 +91,8 @@ public class Menu {
 				System.out.println("3. Update account");
 				System.out.println("4. Delete account");
 				System.out.println("5. Request a ride");
-				System.out.println("6. Cancel ride");
-				System.out.println("7. Bid for a ride");
-				System.out.println("8. Give feedback for recent ride");
+				System.out.println("6. Bid for a ride");
+				System.out.println("7. Give feedback for recent ride");
 				System.out.println("0. Back to Main Menu");
 				System.out.println("Enter menu option: ");
 				String line = Client.getReader().readLine();
@@ -114,8 +114,7 @@ public class Menu {
 						customer = customerMenu.getCustomerByUserName();
 						if (customer != null) {
 							System.out.println(customer.toString());
-						}
-						else
+						} else
 							System.out.println("Wrong id! Try again.");
 						break;
 					case 3:
@@ -128,16 +127,12 @@ public class Menu {
 						customerMenu.deleteCustomer();
 						break;
 					case 5:
-						System.out.println("\nDear Customer, Please enter request details:"); 
-						   requestRide();	
+						System.out.println("\nDear Customer, Please enter request details:");
+						requestRide();
 						break;
 					case 6:
 						break;
 					case 7:
-
-						break;
-
-					case 8:
 						customerMenu.addCustomerFeedback();
 						break;
 					}
@@ -150,9 +145,10 @@ public class Menu {
 			e.printStackTrace();
 		}
 	}
-/*
- * 
- */
+
+	/*
+	 * 
+	 */
 	private void displayDriverMenu() {
 		try {
 			while (true) {
@@ -165,8 +161,7 @@ public class Menu {
 				System.out.println("4. Delete account");
 				System.out.println("5. Update Car");
 				System.out.println("6. Check for ride requests");
-				System.out.println("7. Book parking");
-				System.out.println("8. Give feedback for customer");
+				System.out.println("7. Give feedback for customer");
 				System.out.println("0. Back to Main Menu");
 				System.out.println("Enter menu option: ");
 				String line = Client.getReader().readLine();
@@ -188,8 +183,7 @@ public class Menu {
 						driver = driverMenu.getDriverByUserName();
 						if (driver != null) {
 							System.out.println(driver.toString());
-						}
-						else
+						} else
 							System.out.println("Wrong id! Try again.");
 						break;
 					case 3:
@@ -208,18 +202,14 @@ public class Menu {
 						}
 						break;
 					case 6:
-                            System.out.println("Enter your user name : ");
-                            String inputName = Client.getReader().readLine();
-                            Schedular sc = new Schedular(reqQueue,inputName);
-                            sc.scheduleRide();
+						System.out.println("Enter your user name : ");
+						String inputName = Client.getReader().readLine();
+						Schedular sc = new Schedular(reqQueue, inputName);
+						sc.scheduleRide();
 						break;
 					case 7:
-
-						break;	
-					case 8:
 						driverMenu.addDriverFeedback();
-						break;					
-						
+						break;
 					}
 					if (option == 0) {
 						break;
@@ -242,8 +232,7 @@ public class Menu {
 				System.out.println("1. List of Customers");
 				System.out.println("2. List of Drivers");
 				System.out.println("3. Generate Reports");
-				System.out.println("4. Update Pricing Rules");
-                System.out.println("5. Notify Offers to Customers");
+				System.out.println("4. Notify Offers to Customers");
 				System.out.println("0. Back to Main Menu");
 				System.out.println("Enter menu option: ");
 				String line = Client.getReader().readLine();
@@ -263,10 +252,8 @@ public class Menu {
 						break;
 					case 3:
 						adminMenu.generateReports();
-						break;                     
-                    case 4:
-                        break;
-					case 5:
+						break;
+					case 4:
 						adminMenu.NotifyOffers();
 						break;
 					}
@@ -280,17 +267,17 @@ public class Menu {
 			e.printStackTrace();
 		}
 	}
-    
-    public void requestRide(){
-        
-        SimpleRequest req = new SimpleRequest();
-        req.acceptUserName();
-        req.acceptSource();
-        req.acceptDestination();
-        req.acceptDateAndTime();
-        req.acceptCarType();
-        ProvideAssistance assistance = new ProvideAssistance(req);
-        assistance.checkAssistaceNeeded();
-        reqQueue.add(req);		
-    }
+
+	public void requestRide() {
+
+		SimpleRequest req = new SimpleRequest();
+		req.acceptUserName();
+		req.acceptSource();
+		req.acceptDestination();
+		req.acceptDateAndTime();
+		req.acceptCarType();
+		ProvideAssistance assistance = new ProvideAssistance(req);
+		assistance.checkAssistaceNeeded();
+		reqQueue.add(req);
+	}
 }

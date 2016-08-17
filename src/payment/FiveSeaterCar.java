@@ -1,8 +1,8 @@
 package payment;
 
-public class EconomyCar extends CalculatePayment{
+public class FiveSeaterCar extends CalculatePayment{
 	
-	public EconomyCar(double miles, int no_of_memb) {
+	public FiveSeaterCar(double miles, int no_of_memb) {
 		super(miles, no_of_memb);
 	}
 	

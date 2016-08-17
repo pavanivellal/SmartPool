@@ -11,8 +11,8 @@ public class SimpleRequest extends Request {
 	private double fare;
 	
 	enum carType{
-		Sedan,
-		Hatchback
+		fiveSeater,
+		eightSeater
 	};
 	
 	carType carTyp;
@@ -90,16 +90,16 @@ public class SimpleRequest extends Request {
 	
 	public void acceptCarType() {
 		System.out.println("Enter the type of a car :");
-		System.out.println("1.Sedan");
-		System.out.println("2.Hatchback");
+		System.out.println("1.Five seater");
+		System.out.println("2.Eight seater");
 		input = keyboard.nextLine();	
 		
 		if(input.equals("1")){
-			carTyp = carType.Sedan;
+			carTyp = carType.fiveSeater;
 		}
 		else if(input.equals("2"))
 		{
-			carTyp = carType.Hatchback;
+			carTyp = carType.eightSeater;
 		}
 		else{
 			System.out.println("Invalid Input!");

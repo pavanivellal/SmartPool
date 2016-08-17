@@ -184,7 +184,7 @@ public class Ride implements iRide {
 
 	@Override
 	public String toString() {
-		return "Ride details : " + "\n" + ", Customer ids: " + Arrays.toString(customer_ids) + ", Driver_id:" + driver_id
+		return "Ride details : " + "\n" + "Customer ids: " + Arrays.toString(customer_ids) + ", Driver_id:" + driver_id
 				+ ", Status: " + status + ", Start time: " + start_time + ", End time: " + end_time + ", Fare: " + fare ;
 	}
 	

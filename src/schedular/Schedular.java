@@ -12,12 +12,12 @@ import notification.CustomerNotification;
 import notification.EmailNotification;
 import notification.Message;
 import notification.NotificationCenter;
+import parking.Parking;
 import payment.CalculatePayment;
 import payment.CardPayment;
-import payment.EconomyCar;
+import payment.FiveSeaterCar;
 import payment.EstimatePayment;
 import payment.OnlinePayment;
-import payment.Parking;
 import payment.Payment;
 import request.AddVehicleType;
 import request.Location;
@@ -229,9 +229,9 @@ public class Schedular implements iSchedular {
 		OnlinePayment op1;
 		double tot_ind_cost;
 
-		if (carType.equalsIgnoreCase("Economy")) {
+		if (carType.equalsIgnoreCase("FiveSeater")) {
 
-			Typ1 = new EconomyCar(dist, no_of_memb);
+			Typ1 = new FiveSeaterCar(dist, no_of_memb);
 			Typ1.cost_for_distance();
 			System.out.println("Specify Parking Type\n1.Covered\n2.Open");
 			parkType = scan.next();
@@ -256,8 +256,8 @@ public class Schedular implements iSchedular {
 			}
 		}
 
-		else if (carType.equalsIgnoreCase("Luxury")) {
-			Typ2 = new EconomyCar(dist, no_of_memb);
+		else if (carType.equalsIgnoreCase("EightSeater")) {
+			Typ2 = new FiveSeaterCar(dist, no_of_memb);
 			Typ2.cost_for_distance();
 			System.out.println("Specify Parking Type\n1.Covered\n2.Open");
 			parkType = scan.next();

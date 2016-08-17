@@ -1,8 +1,8 @@
 package payment;
 
-public class LuxuryCar extends CalculatePayment{
+public class EightSeaterCar extends CalculatePayment{
 	
-	public LuxuryCar(double miles, int no_of_memb) {
+	public EightSeaterCar(double miles, int no_of_memb) {
 		super(miles, no_of_memb);
 		// TODO Auto-generated constructor stub
 	}
