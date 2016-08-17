@@ -15,6 +15,7 @@ public class Driver extends Member {
 	private LicenseDetails licenseDetails;
 	private Vehicle vehicle;
 	private boolean readyToAssist;
+	private int rating;
 
 	private int X;
 	private int Y;
@@ -65,12 +66,21 @@ public class Driver extends Member {
 	public boolean getReadytoAssist() {
 		return readyToAssist;
 	}
+	
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
 	@Override
 	public String toString() {
 		String member = super.toString();
 		String license = licenseDetails.toString();
 		String vehicledetails = vehicle.toString();
-		return "Driver Details: "+"\n" + member + "\n"+"Availability: " 
+		return "Driver Details: "+"\n" + member +"Rating: "+ rating+"\n"+"Availability: " 
 				+ availability +"\n" + "LicenseDetails:"+"\n" + license +"\n"+ "Vehicle Details: " +"\n"+ vehicledetails;
 	}
 }

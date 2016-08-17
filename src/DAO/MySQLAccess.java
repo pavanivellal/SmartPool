@@ -614,6 +614,7 @@ public class MySQLAccess {
 				driver.setEmailId(rs.getString("email"));
 				driver.setPhoneNumber(rs.getString("phoneno"));
 				driver.setAvailability(rs.getString("availability"));
+				driver.setRating(rs.getInt("rating"));
 				cardDetails.setCardType(rs.getString("cardtype"));
 				cardDetails.setCardNumber(rs.getString("cardnumber"));
 				cardDetails.setExpiryMonth(rs.getInt("expirymonth"));
@@ -630,7 +631,6 @@ public class MySQLAccess {
 				driver.setVehicle(car);
 				driver.setX(rs.getInt("addX"));
 				driver.setY(rs.getInt("addY"));
-
 				driverQueue.add(driver);
 			}
 		} catch (Exception e) {
@@ -977,8 +977,9 @@ public class MySQLAccess {
 	public ArrayList<Ride> getAllRides() {
 		String getAllRides = null;
 		Connection dbConnection = null;
-
+		Queue queue = new LinkedList<>();
 		ArrayList<Ride> rideList = new ArrayList<Ride>();
+	
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
@@ -994,12 +995,14 @@ public class MySQLAccess {
 
 			ResultSet rs = preparedStatement.executeQuery(getAllRides);
 			while (rs.next()) {
-				Ride ride = new Ride(null);
+				Ride ride = new Ride(queue);
 				Ride.setId(rs.getInt("id"));
 				ride.setDriver_id(rs.getInt("driver_id"));
-//				ride.setCustomer1_id(rs.getInt("cust1_id"));
-//				ride.setCustomer2_id(rs.getInt("cust2_id"));
-//				ride.setCustomer3_id(rs.getInt("cust3_id"));
+				int customer_ids[] = new int[3];
+				customer_ids[0]=rs.getInt("cust1_id");
+				customer_ids[1]=rs.getInt("cust2_id");
+				customer_ids[2]=rs.getInt("cust3_id");
+				ride.setCustomer_ids(customer_ids);
 				ride.setStart_time(rs.getString("start_time"));
 				ride.setEnd_time(rs.getString("end_time"));
 				ride.setFare(rs.getDouble("fare"));

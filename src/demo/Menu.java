@@ -46,7 +46,7 @@ public class Menu {
 		System.out.println("-------------------------------------------");
 		System.out.println("1. Customer Menu");
 		System.out.println("2. Driver Menu");
-		System.out.println("3. Staff Menu");
+		System.out.println("3. Admin Menu");
 		System.out.println("0. Exit system");
 		System.out.println("Enter menu option : ");
 		try {

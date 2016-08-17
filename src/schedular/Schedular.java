@@ -6,6 +6,7 @@ import java.util.ListIterator;
 import java.util.Queue;
 import java.util.Scanner;
 import DAO.MySQLAccess;
+import membership.Customer;
 import membership.Driver;
 import notification.CustomerNotification;
 import notification.EmailNotification;
@@ -172,16 +173,19 @@ public class Schedular implements iSchedular {
 	
 
 	public void NotifyCustomer(SimpleRequest req) {
-
+		MySQLAccess da = new MySQLAccess();
 		NotificationCenter notify;
 		Message message;
-
 		message = new EmailNotification();
-		notify = new CustomerNotification(message, "Dear" + req.getUserName() + ", "
+		Driver driver = da.getDriverById(req.getDriverID());
+		
+		Customer cust = da.getCustomerByUserName(req.getUserName());
+		
+		notify = new CustomerNotification(message, "Dear" + cust.getFirstName() +" " + driver.getLastName()+ ", "
 				 + "Your Ride Request has been Approved!"
 				 + "\n Ride Details =>" 
 				 + "\n Date and Time: " + req.getDateTime()
-				 + "\n Drive Name: " + req.getDriverID()
+				 + "\n Drive Name: " + driver.getFirstName()+" " + driver.getLastName()
 				 + "\n Pick up point: " 
 				 + "\n Fare Estimation: " + req.getFare() 
 				 +"\nDriver will wait only upto" + "" + " mins!");
@@ -282,9 +286,5 @@ public class Schedular implements iSchedular {
 	private void displayRide(Ride r) {
 
 		// System.out.println(r.);
-	}
-
-	
-
-	
+	}	
 }

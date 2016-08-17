@@ -123,6 +123,8 @@ public class DriverMenu {
 			System.out.println("Enter address y co-ordinate: ");
 			driver.setY(Integer.parseInt(reader.readLine()));
 
+			driver.setRating(5);
+			
 			MemberShip memberShip = new MemberShip();
 			memberShip.receiveMembershipApplication();
 
