@@ -2,8 +2,7 @@ package payment;
 
 public abstract class Payment {
 	
-	/*public double ind_trav_cost;
-	public double tot_trav_cost;*/
+	int payment_id;
 	public double ind_cost;
 	public double tot_cost;
 	public int no_of_memb;

@@ -23,7 +23,7 @@ public class CardPayment extends Payment{
 	@Override
 	public
 	void make_payment() {
-		System.out.println("Get Member ID");
+		System.out.println("Get Member ID: ");
 		int memb_id = scan.nextInt();
 		System.out.println("Payment Made by Card");
 		
