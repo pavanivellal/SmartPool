@@ -1075,6 +1075,58 @@ public class MySQLAccess {
 
 	/*-----Methods to fetch all rides from database----*/
 
+	public int addNewRide(Ride ride) {
+		int ride_id = 0;
+		int i = 0;
+
+		String addRide = null;
+		Connection dbConnection = null;
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			System.out.println("Database connection problem occured.");
+			e.printStackTrace();
+		}
+
+		try {
+
+			dbConnection = DriverManager.getConnection(URL, USER, PASS);
+			addRide = "INSERT INTO ride "
+					+ "(request_id,driver_id,cust1_id,cust2_id,cust3_id,start_time,end_time,fare,status) "
+
+					+ "VALUES(?,?,?,?,?,?,?,?,?)";
+			preparedStatement = dbConnection.prepareStatement(addRide, Statement.RETURN_GENERATED_KEYS);
+//			preparedStatement.setInt(1, ride.getRideID());
+			preparedStatement.setInt(1, 1);
+			preparedStatement.setInt(2, ride.getDriver_id());
+			int custIds[] = ride.getCustomer_ids();
+			preparedStatement.setInt(3, custIds[0]);
+			preparedStatement.setInt(4, custIds[1]);
+			preparedStatement.setInt(5, custIds[2]);
+			preparedStatement.setString(6, "10:20");
+			preparedStatement.setString(7, ride.getEnd_time());
+			preparedStatement.setDouble(8, ride.getFare());
+			preparedStatement.setString(9, ride.getStatus());
+
+			i = preparedStatement.executeUpdate();
+
+		} catch (Exception e) {
+			System.out.println("Problem occured while creating new customer");
+			e.printStackTrace();
+		}
+
+		finally {
+			try {
+				preparedStatement.close();
+				dbConnection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return ride_id;
+	}
+
 	/**
 	 * Method returns the list of rides from the database
 	 * @return rideList
@@ -1108,7 +1160,7 @@ public class MySQLAccess {
 				customer_ids[1] = rs.getInt("cust2_id");
 				customer_ids[2] = rs.getInt("cust3_id");
 				ride.setCustomer_ids(customer_ids);
-				ride.setStart_time(rs.getDate("start_time"));
+//				ride.setStart_time(rs.getDate("start_time"));
 				ride.setEnd_time(rs.getString("end_time"));
 				ride.setFare(rs.getDouble("fare"));
 				ride.setStatus(rs.getString("status"));

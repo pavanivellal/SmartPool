@@ -15,7 +15,7 @@ public abstract class CalculatePayment {
 		this.no_of_memb = no_of_memb;
 	}
 	
-	public abstract void cost_for_distance();
+	public abstract double cost_for_distance();
 
 	public double distribute(int no_members, double tot_cost2) {
 		if(no_members <= 0)

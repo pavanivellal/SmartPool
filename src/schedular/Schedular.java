@@ -16,7 +16,7 @@ import notification.NotificationCenter;
 import parking.Parking;
 import payment.CalculatePayment;
 import payment.CardPayment;
-
+import payment.EstimatePayment;
 import payment.FiveSeaterCar;
 import payment.OnlinePayment;
 
@@ -27,6 +27,7 @@ import request.SimpleRequest;
 import ride.Ride;
 import route.RoutingContext;
 import route.Utility;
+import rules.RideRule;
 
 public class Schedular implements iSchedular {
 
@@ -40,6 +41,7 @@ public class Schedular implements iSchedular {
 	Scanner keyboard = new Scanner(System.in);
 	String input = "";
 	String driverName;
+	MySQLAccess db = new MySQLAccess();
 
 	ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
 
@@ -67,7 +69,7 @@ public class Schedular implements iSchedular {
 		 * request with driver
 		 */
 
-		MySQLAccess db = new MySQLAccess();
+	
 
 		MappingContext mappingCtx = new MappingContext();
 
@@ -120,7 +122,6 @@ public class Schedular implements iSchedular {
 	public void startRide() {
 
 		Ride ride = new Ride(day1);
-
 		ride.initiateRide();
 		int choice;
 
@@ -144,6 +145,7 @@ public class Schedular implements iSchedular {
 			switch (choice) {
 			case 1:
 				ride.startRide(choice);
+				int id = db.addNewRide(ride);
 				break;
 
 			case 2:
@@ -170,7 +172,6 @@ public class Schedular implements iSchedular {
 				break;
 			}
 		} while (choice != 0);
-
 	}
 
 	/**
@@ -217,7 +218,7 @@ public class Schedular implements iSchedular {
 	 * 
 	 * Notification to customer
 	 */
-	public void NotifyCustomer(SimpleRequest req, Location commonSource) {
+	public void NotifyCustomer(SimpleRequest req, Location commonSource) {	
 		MySQLAccess da = new MySQLAccess();
 		NotificationCenter notify;
 		Message message;
@@ -225,13 +226,20 @@ public class Schedular implements iSchedular {
 		Driver driver = da.getDriverById(req.getDriverID());
 
 		Customer cust = da.getCustomerByUserName(req.getUserName());
-
+		
+		
+		int optimalRoute = FindRoutes(req.getSource().getX(), req.getSource().getY(), 
+				req.getDestination().getX(), req.getDestination().getY());
+		
+		EstimatePayment estimate = new EstimatePayment(optimalRoute,2,req.getCarType());
+		estimate.cost_for_distance();
+		RideRule rule = new RideRule();
 		notify = new CustomerNotification(message,
 				"Dear " + cust.getFirstName() + " " + cust.getLastName() + ", "
 						+ "Your Ride Request has been Accepted!" + "\n ******Ride Details*****" + "\n Date and Time: "
 						+ req.getDateTime() + "\n Drive Name: " + driver.getFirstName() + " " + driver.getLastName()
 						+ "\n Pick up point: " + commonSource.getX() + "," + commonSource.getY()
-						+ "\n Fare Estimation: " + req.getFare() + "\nDriver will wait only upto" + "" + " mins!");
+						+ "\n Fare Estimation: " + estimate.cost_for_distance() +"\nDriver will wait only upto " + 2 + " mins!");
 		notify.memberNotification();
 	}
 
@@ -249,7 +257,7 @@ public class Schedular implements iSchedular {
 	 * 
 	 * Find routes
 	 */
-	public void FindRoutes(int source_i, int source_j, int dest_i, int dest_j) {
+	public int FindRoutes(int source_i, int source_j, int dest_i, int dest_j) {
 
 		Utility utility = new Utility();
 		int source = utility.locateNode(source_i, source_j);
@@ -258,31 +266,40 @@ public class Schedular implements iSchedular {
 		RoutingContext rc = new RoutingContext();
 
 		int optimalRoute = rc.route(source, destination);
-		System.out.println(optimalRoute);
+		return optimalRoute;
 	}
 
 	/**
 	 * 
 	 * Payment Method
 	 */
-	public void DoPayment(int no_of_memb, double dist, String carType) {
+	public void DoPayment() {
 
-		System.out.println("Enter number of members, distance in miles, CarType");
-
+	//	System.out.println("Enter number of members, distance in miles, CarType");
+	
 		Scanner scan = new Scanner(System.in);
 		double park_hrs;
 		String parkType;
-
 		Payment pay1, pay2;
 		CalculatePayment Typ1, Typ2, Typ3;
 		CardPayment c1;
 		OnlinePayment op1;
 		double tot_ind_cost;
+		int no_of_memb=2;
+		String carType ="fiveSeater";
+		int dist = 3;
+		int optimalRoute = FindRoutes(req.getSource().getX(), req.getSource().getY(), 
+				req.getDestination().getX(), req.getDestination().getY());
+		
+		EstimatePayment estimate = new EstimatePayment(optimalRoute,2,req.getCarType());
+		estimate.cost_for_distance();
 
-		if (carType.equalsIgnoreCase("Economy")) {
+		if (carType.equalsIgnoreCase("fiveSeater")) {
 
 			Typ1 = new  FiveSeaterCar(dist, no_of_memb);
 			Typ1.cost_for_distance();
+			System.out.println("---------------------------");
+			System.out.println("For driver:");
 			System.out.println("Specify Parking Type\n1.Covered\n2.Open");
 			parkType = scan.next();
 			System.out.println("Specify Parking Hours?");
@@ -306,7 +323,7 @@ public class Schedular implements iSchedular {
 			}
 		}
 
-		else if (carType.equalsIgnoreCase("Luxury")) {
+		else if (carType.equalsIgnoreCase("eightSeater")) {
 			Typ2 = new FiveSeaterCar(dist, no_of_memb);
 			Typ2.cost_for_distance();
 			System.out.println("Specify Parking Type\n1.Covered\n2.Open");
@@ -330,6 +347,28 @@ public class Schedular implements iSchedular {
 				System.out.println("\nIncorrect Option");
 			}
 
+		}
+	}
+	
+	public void payForRide(){
+		Scanner scan = new Scanner(System.in);
+		Payment pay1, pay2;
+		CalculatePayment Typ1 = null;
+		CardPayment c1;
+		OnlinePayment op1;
+		System.out.println("---------------------------");
+		System.out.println("For customer:");
+		System.out.println("Dear Customer choose Payment options:\n1.Card Payment \n2.Online Payment");
+		String pay_type = scan.next();
+		if (pay_type.equals("1") || pay_type.equalsIgnoreCase("Card Payment")) {
+			c1 = new CardPayment(Typ1, 2);
+			c1.make_payment();
+
+		} else if (pay_type.equals("2") || pay_type.equals("Online Payment")) {
+			op1 = new OnlinePayment(Typ1, 2);
+			op1.make_payment();
+		} else {
+			System.out.println("\nIncorrect Option");
 		}
 	}
 }

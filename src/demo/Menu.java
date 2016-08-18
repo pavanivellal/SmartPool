@@ -32,16 +32,17 @@ public class Menu {
 	private DriverMenu driverMenu = new DriverMenu();
 	private CustomerMenu customerMenu = new CustomerMenu();
 	private Driver driver = new Driver();
-    
-    SimpleRequest req;
-    private Queue reqQueue = new LinkedList();
-    private Queue reqQueueThreeDays = new LinkedList();
-    Scanner keyboard = new Scanner(System.in);
-    String input = "";
-    Customer cust = new Customer();
-    SimpleRequest request;
-    MySQLAccess db = new MySQLAccess();
+
+	SimpleRequest req;
+	private Queue reqQueue = new LinkedList();
+	private Queue reqQueueThreeDays = new LinkedList();
+	Scanner keyboard = new Scanner(System.in);
+	String input = "";
+	Customer cust = new Customer();
+	SimpleRequest request;
+	MySQLAccess db = new MySQLAccess();
 	ListIterator<SimpleRequest> listIterator = (ListIterator<SimpleRequest>) reqQueue.iterator();
+
 	public Menu() {
 		while (true)
 			displayMainMenu();
@@ -101,8 +102,7 @@ public class Menu {
 				System.out.println("3. Update account");
 				System.out.println("4. Delete account");
 				System.out.println("5. Request a ride");
-				System.out.println("6. Bid for a ride");
-				System.out.println("7. Give feedback for recent ride");
+				System.out.println("6. Give feedback for recent ride");
 				System.out.println("0. Back to Main Menu");
 				System.out.println("Enter menu option: ");
 				String line = Client.getReader().readLine();
@@ -140,9 +140,8 @@ public class Menu {
 						System.out.println("\nDear Customer, Please enter request details:");
 						acceptRequest();
 						break;
+
 					case 6:
-						break;
-					case 7:
 						customerMenu.addCustomerFeedback();
 						break;
 					}
@@ -160,8 +159,8 @@ public class Menu {
 	 * 
 	 */
 	private void displayDriverMenu() {
-			Schedular sc = null;
-        try {
+		Schedular sc = null;
+		try {
 			while (true) {
 				System.out.println();
 				System.out.println("-------------------------------------------");
@@ -172,8 +171,8 @@ public class Menu {
 				System.out.println("4. Delete account");
 				System.out.println("5. Update Car");
 				System.out.println("6. Check for ride requests");
-                System.out.println("7. Initiate the ride");
-                System.out.println("8. Book parking");
+				System.out.println("7. Initiate the ride");
+				System.out.println("8. Book parking");
 				System.out.println("9. Give feedback for customer");
 				System.out.println("0. Back to Main Menu");
 				System.out.println("Enter menu option: ");
@@ -215,20 +214,22 @@ public class Menu {
 						}
 						break;
 					case 6:
-                            System.out.println("Enter user name : ");
-                            String inputName = Client.getReader().readLine();
-                            selectRequestForThreeDays();
-                            sc = new Schedular(reqQueueThreeDays, inputName);
-                            sc.scheduleRide();
-                            break;
-                        case 7:
-                            sc.startRide();
-                            break;
-                        case 8:
-                            break;
-                        case 9:
-                            driverMenu.addDriverFeedback();
-                            break;
+						System.out.println("Enter user name : ");
+						String inputName = Client.getReader().readLine();
+						selectRequestForThreeDays();
+						sc = new Schedular(reqQueueThreeDays, inputName);
+						sc.scheduleRide();
+						break;
+					case 7:
+						sc.startRide();
+						sc.payForRide();
+						sc.DoPayment();
+						break;
+					case 8:
+						break;
+					case 9:
+						driverMenu.addDriverFeedback();
+						break;
 					}
 					if (option == 0) {
 						break;
@@ -287,71 +288,71 @@ public class Menu {
 		}
 	}
 
-    /**
-     * Accept ride request from the customer
-     *
-     */
-    
-    public void acceptRequest() {
-        
-        request = new SimpleRequest();
-        request.acceptUserName();
-        while (true) {
-            request.acceptSource();
-            request.acceptDestination();
-            
-            Date date = null;
-            while (date == null) {
-                date = request.getInputBookingDate();
-                if (date == null) {
-                    System.out.println("Please enter the date in proper format.");
-                }
-            }
-            request.setDateTime(date);
-            request.acceptCarType();
-            request.acceptDriverRating();
-            
-            request.setCustomerID(db.getCustomerByUserName(request.getUserName()).getMemberId());
-            reqQueue.add(request);
-            
-            System.out.println("Do you want request more rides? (Y / N): ");
-            input = keyboard.nextLine();
-            
-            if (!input.equalsIgnoreCase("y")) {
-                break;
-            }
-            request = new SimpleRequest();
-        }
-    }
-    
-    /**
-     * A function to create a queue only for next 3 days after the date entered
-     * by the driver
-     *
-     */
-    
-    public void selectRequestForThreeDays() {
-        
-        java.util.Date parsed = null;
-        listIterator = (ListIterator<SimpleRequest>) reqQueue.iterator();
-        
-        // Accept the date
-        try {
-            System.out.println("Please enter date to check ride schedule[MM/dd/yyyy hh:mm]: ");
-            
-            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm");
-            input = keyboard.nextLine();
-            parsed = (java.util.Date) format.parse(input);
-        } catch (Exception e) {
-        }
-        
-        // Calculate date after 3 days and select the requests baseed on it
-        Date nextDate = new java.sql.Date(parsed.getTime() + 3 * 24 * 60 * 60 * 1000);
-        while (listIterator.hasNext()) {
-            req = (SimpleRequest) listIterator.next();
-            if (req.getDateTime().before(nextDate)) {
-                reqQueueThreeDays.add(req);
-            }
-        }
-    }
+	/**
+	 * Accept ride request from the customer
+	 *
+	 */
+
+	public void acceptRequest() {
+
+		request = new SimpleRequest();
+		request.acceptUserName();
+		while (true) {
+			request.acceptSource();
+			request.acceptDestination();
+
+			Date date = null;
+			while (date == null) {
+				date = request.getInputBookingDate();
+				if (date == null) {
+					System.out.println("Please enter the date in proper format.");
+				}
+			}
+			request.setDateTime(date);
+			request.acceptCarType();
+			request.acceptDriverRating();
+
+			request.setCustomerID(db.getCustomerByUserName(request.getUserName()).getMemberId());
+			reqQueue.add(request);
+
+			System.out.println("Do you want request more rides? (Y / N): ");
+			input = keyboard.nextLine();
+
+			if (!input.equalsIgnoreCase("y")) {
+				break;
+			}
+			request = new SimpleRequest();
+		}
+	}
+
+	/**
+	 * A function to create a queue only for next 3 days after the date entered
+	 * by the driver
+	 *
+	 */
+
+	public void selectRequestForThreeDays() {
+
+		java.util.Date parsed = null;
+		listIterator = (ListIterator<SimpleRequest>) reqQueue.iterator();
+
+		// Accept the date
+		try {
+			System.out.println("Please enter date to check ride schedule[MM/dd/yyyy hh:mm]: ");
+
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy hh:mm");
+			input = keyboard.nextLine();
+			parsed = (java.util.Date) format.parse(input);
+		} catch (Exception e) {
+		}
+
+		// Calculate date after 3 days and select the requests baseed on it
+		Date nextDate = new java.sql.Date(parsed.getTime() + 3 * 24 * 60 * 60 * 1000);
+		while (listIterator.hasNext()) {
+			req = (SimpleRequest) listIterator.next();
+			if (req.getDateTime().before(nextDate)) {
+				reqQueueThreeDays.add(req);
+			}
+		}
+	}
 }

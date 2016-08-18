@@ -1,6 +1,7 @@
 package ride;
 
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Queue;
 
@@ -242,8 +243,13 @@ public class Ride implements iRide {
 		Customer cust = da.getCustomerByUserName(req.getUserName());
 
 		notify = new CustomerNotification(message,
-				"Dear " + cust.getFirstName() + " " + driver.getLastName() + messageToCustomer);
+				"Dear " + cust.getFirstName() + " " + cust.getLastName() + messageToCustomer);
 
 		notify.memberNotification();
+	}
+	@Override
+	public String toString() {
+		return "Ride details : " + "\n" + "Customer ids: " + Arrays.toString(customer_ids) + ", Driver_id:" + driver_id
+				+ ", Status: " + status + ", Start time: " + start_time + ", End time: " + end_time + ", Fare: " + fare ;
 	}
 }

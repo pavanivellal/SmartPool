@@ -279,7 +279,7 @@ public class DriverMenu {
 
 					driverRecommendation.setRecommended(true);
 					driverComplain.setComplain("");
-					System.out.println("Driver is recommended by you: ");
+					System.out.println("Customer is recommended by you: ");
 					System.out.println("Thank you for recommendation. ");
 				}
 				if (option == 2) {
@@ -292,10 +292,7 @@ public class DriverMenu {
 				MySQLAccess da = new MySQLAccess();
 
 				da.addDriverFeedback(driverFeedback, cust_id, driver_id, driverRecommendation, driverComplain);
-				System.out.println("Successfully submitted the feedback.");
-
-				da.addDriverFeedback(driverFeedback,cust_id,driver_id,driverRecommendation,driverComplain);
-				System.out.println("Successfully submitted the feedback.");		
+				System.out.println("Successfully submitted the feedback.");	
 
 			} else {
 				MySQLAccess da = new MySQLAccess();
