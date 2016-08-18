@@ -3,25 +3,34 @@ package ride;
 public class DelayedState implements iState {
 
 	iRide ride;
-	
+
 	public DelayedState(iRide r) {
-	  ride = r;
+		ride = r;
 	}
 
+	/**
+	 * Started State
+	 */
 	@Override
 	public String startRide(int choice) {
-		 return "Ride has been already started";
+		return "Ride has been already started";
 	}
 
+	/**
+	 * Waiting State
+	 */
 	@Override
-	public String waitingRide(int choice) {		
+	public String waitingRide(int choice) {
 		return "Ride started!";
 	}
 
+	/**
+	 * Delayed State
+	 */
 	@Override
 	public String delayRide(int choice) {
 		ride.setState(new StartedState(ride));
-		return "Dear customer, sorry for delay. Ride is starting again soon!";	
+		return "Dear customers, sorry for delay.";
 	}
 
 	@Override
@@ -29,6 +38,9 @@ public class DelayedState implements iState {
 		return "Ride ended!";
 	}
 
+	/**
+	 * Cancel State
+	 */
 	@Override
 	public String cancelRide(int choice) {
 		return "Ride is currently delayed and still continuing";
@@ -39,6 +51,5 @@ public class DelayedState implements iState {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 }

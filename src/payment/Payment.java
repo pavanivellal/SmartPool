@@ -27,7 +27,6 @@ public abstract class Payment {
 	{
 		return ind_cost = CalPmt.distribute(no_members, tot_cost);
 	}
-	abstract void make_payment();
-	
+	abstract void make_payment();	
 }
 

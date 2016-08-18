@@ -1,5 +1,9 @@
 package request;
 
+/**
+ * 
+ * @author VidyaKhadsare
+ */
 public class Location {
 
 	int _x,_y;

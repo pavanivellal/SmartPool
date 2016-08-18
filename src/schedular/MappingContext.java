@@ -15,10 +15,10 @@ public class MappingContext {
 	
 	public MappingStrategy setMappingStrategy(String str, Queue reqQueue) { 	
 		
-		if(str == "assistanceNeeded"){
-			mapSt = new MapAssistanceNeed();
+		if(str == "rating"){
+			mapSt = new MapRating();
 		} 
-		else if(str == "assistanceNotNeeded"){
+		else{
 			mapSt = new MapLocation();
 		}	
 		return mapSt;

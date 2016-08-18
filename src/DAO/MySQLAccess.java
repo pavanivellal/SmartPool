@@ -1108,7 +1108,7 @@ public class MySQLAccess {
 				customer_ids[1] = rs.getInt("cust2_id");
 				customer_ids[2] = rs.getInt("cust3_id");
 				ride.setCustomer_ids(customer_ids);
-				ride.setStart_time(rs.getString("start_time"));
+				ride.setStart_time(rs.getDate("start_time"));
 				ride.setEnd_time(rs.getString("end_time"));
 				ride.setFare(rs.getDouble("fare"));
 				ride.setStatus(rs.getString("status"));

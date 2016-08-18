@@ -1,12 +1,15 @@
 package schedular;
 
+/**
+ * 
+ * @author VidyaKhadsare
+ */
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Queue;
 
 import DAO.MySQLAccess;
-import membership.Customer;
 import membership.Driver;
 import request.Location;
 import request.Request;
@@ -17,22 +20,28 @@ import vehicle.Car;
 
 public class MapLocation implements MappingStrategy {
 
-	public HashMap<String,Queue> MapDriverAndRequest(Queue reqQueue, Queue driverQueue, String driverName) {
+	Queue reqTempQueue = new LinkedList();
+	Queue reqTempQueue1 = new LinkedList();
+	Queue driverQueue1 = new LinkedList();
+	Driver driver = null, closestDriver = null;
+	MySQLAccess db = new MySQLAccess();
+	HashMap hm = new HashMap<>();
 
-		Queue reqTempQueue = new LinkedList();
-		Queue reqTempQueue1 = new LinkedList();
-		Queue driverQueue1 = new LinkedList();
-		Driver driver1 = null, driver = null;
-		MySQLAccess db = new MySQLAccess();
-		HashMap hm = new HashMap<>();
+	SimpleRequest req;
+	ListIterator<Request> listIterator;
+	ListIterator<Driver> driverIterator;
 
-		// Get first request's destination
+	/**
+	 * 
+	 * This method will choose closest driver after comparing date, destination
+	 * and car type to map requests with driver
+	 */
+	public HashMap<String, Queue> MapDriverAndRequest(Queue reqQueue, Queue driverQueue, String driverName) {
 		SimpleRequest reqTemp = (SimpleRequest) reqQueue.element();
+		listIterator = (ListIterator<Request>) reqQueue.iterator();
+		driverIterator = (ListIterator<Driver>) driverQueue.iterator();
 		Location commonDestination = reqTemp.getDestination();
-		SimpleRequest req;
 
-		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
-		ListIterator<Driver> driverIterator = (ListIterator<Driver>) driverQueue.iterator();
 		// Compare it with every other request to find the match
 		while (listIterator.hasNext()) {
 			req = (SimpleRequest) listIterator.next();
@@ -43,6 +52,7 @@ public class MapLocation implements MappingStrategy {
 			}
 		}
 
+		// Compare car type
 		listIterator = (ListIterator<Request>) reqTempQueue.iterator();
 
 		while (listIterator.hasNext()) {
@@ -58,75 +68,37 @@ public class MapLocation implements MappingStrategy {
 			}
 		}
 
+		// Find closest driver
 		SimpleRequest req1 = (SimpleRequest) reqTempQueue.element();
 		Location commonSource = req1.getSource();
 
 		int closestDriverDistance = 1000000;
-		Driver closestDriver;
 
 		driverIterator = (ListIterator<Driver>) driverQueue1.iterator();
 		while (driverIterator.hasNext()) {
-			driver1 = (Driver) driverIterator.next();
-			int distance = FindRoutes(commonSource.getX(), commonSource.getY(), driver1.getX(), driver1.getY());
+			driver = (Driver) driverIterator.next();
+			int distance = FindRoutes(commonSource.getX(), commonSource.getY(), driver.getX(), driver.getY());
 			if (distance < closestDriverDistance) {
 				closestDriverDistance = distance;
-				closestDriver = driver1;
+				closestDriver = driver;
 			}
 		}
 
-		/*if (reqTempQueue.size() >= 2 && driver.getUserName().equalsIgnoreCase(driverName)) {
-			listIterator = (ListIterator<Request>) reqTempQueue.iterator();
-			Customer cust;
+		listIterator = (ListIterator<Request>) reqTempQueue.iterator();
 
-			System.out
-					.println("Requests are Matching with Driver " + driver.getFirstName() + " " + driver.getLastName());
-			System.out.println("\n" + reqTempQueue.size() + " Customer request are matching with the you! ");
-			System.out.println("\n List of Matching Customers Requests => ");
-
-			while (listIterator.hasNext()) {
-				req = (SimpleRequest) listIterator.next();
-				req.setDriverID(driver1.getMemberId());
-				cust = db.getCustomerByUserName(req.getUserName());
-				System.out.println(cust.getFirstName() + " " + cust.getLastName());
-			}
-			hm.put(driver.getUserName(),reqTempQueue);
-			return (HashMap<String, Queue>) hm;
-		} else {
-			System.out.println(
-					" Number of matching Customer request : " + reqTempQueue.size() + ". Carpool scheduling not possible!");
+		while (listIterator.hasNext()) {
+			req = (SimpleRequest) listIterator.next();
+			req.setDriverID(closestDriver.getMemberId());
 		}
-		return hm;*/
-		
-		if (driver != null) {
-
-			if (reqTempQueue.size() >= 2 && driver.getUserName().equalsIgnoreCase(driverName)) {
-				/*
-				 * System.out.println("Requests are Matching with Driver " +
-				 * driver.getFirstName() + " " + driver.getLastName());
-				 * listIterator = (ListIterator<Request>)
-				 * reqTempQueue.iterator();
-				 * 
-				 * Customer cust; System.out.println("\n" + reqTempQueue.size()
-				 * + " Customer request are matching with the you! ");
-				 * System.out.println(
-				 * "\n List of Matching Customers Requests => "); while
-				 * (listIterator.hasNext()) { req = (SimpleRequest)
-				 * listIterator.next(); req.setDriverID(driver.getMemberId());
-				 * req.setCustomerID(db.getCustomerByUserName(req.getUserName())
-				 * .getMemberId()); cust =
-				 * db.getCustomerByUserName(req.getUserName());
-				 * System.out.println(cust.getFirstName() + " " +
-				 * cust.getLastName()); }
-				 */
-				hm.put(driver.getUserName(), reqTempQueue);
-			} else {
-				System.out.println("Sorry, Number of matching Customer request : " + reqTempQueue.size()
-						+ ". Carpool scheduling is not possible!");
-			}
-		}
+		divideRequestAccordingToDates();
 		return hm;
 	}
 
+	/**
+	 * 
+	 * This method will call another method to find optimal route while choosing
+	 * closest driver
+	 */
 	public int FindRoutes(int source_i, int source_j, int dest_i, int dest_j) {
 
 		Utility utility = new Utility();
@@ -139,10 +111,63 @@ public class MapLocation implements MappingStrategy {
 		return optimalRoute;
 	}
 
-	public Location findCommonSource(Queue reqQueue) {
+	/**
+	 * 
+	 * This method will match reuests having same dates
+	 */
+	public void divideRequestAccordingToDates() {
 
-		Location srcLocation = ((SimpleRequest) reqQueue.remove()).getSource();
-		return srcLocation;
+		listIterator = (ListIterator<Request>) reqTempQueue.iterator();
+		ListIterator<Request> listIterator2;
+		Queue day1 = new LinkedList<>();
+		Queue day2 = new LinkedList<>();
+		Queue day3 = new LinkedList<>();
+
+		SimpleRequest tempReq;
+		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
+		req = (SimpleRequest) reqTempQueue.element();
+
+		// System.out.println(req.getDateTime().toString());
+		while (listIterator2.hasNext()) {
+			tempReq = (SimpleRequest) listIterator2.next();
+			System.out.println(tempReq.getDateTime().toString());
+			int result = tempReq.getDateTime().compareTo(req.getDateTime());
+			if (result == 0) {
+				day1.add(tempReq);
+			}
+		}
+		req = null;
+		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
+		while (listIterator2.hasNext()) {
+			tempReq = (SimpleRequest) listIterator2.next();
+			if (!day1.contains(tempReq)) {
+				if (req == null) {
+					req = (SimpleRequest) reqTempQueue.element();
+				}
+				int result = tempReq.getDateTime().compareTo(req.getDateTime());
+				if (result == 0) {
+					day2.add(tempReq);
+				}
+			}
+		}
+
+		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
+		req = null;
+		while (listIterator2.hasNext()) {
+			tempReq = (SimpleRequest) listIterator2.next();
+			if (!day1.contains(tempReq) && !day2.contains(tempReq)) {
+				if (req == null) {
+					req = (SimpleRequest) reqTempQueue.element();
+				}
+				int result = tempReq.getDateTime().compareTo(req.getDateTime());
+				if (result == 0) {
+					day3.add(tempReq);
+				}
+			}
+		}
+		hm.put("1", day1);
+		hm.put("2", day2);
+		hm.put("3", day3);
 	}
 
 }

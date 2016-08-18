@@ -1,9 +1,16 @@
 package ride;
 
-import java.util.Arrays;
+import java.sql.Date;
 import java.util.ListIterator;
 import java.util.Queue;
 
+import DAO.MySQLAccess;
+import membership.Customer;
+import membership.Driver;
+import notification.CustomerNotification;
+import notification.EmailNotification;
+import notification.Message;
+import notification.NotificationCenter;
 import request.Location;
 import request.Request;
 import request.SimpleRequest;
@@ -15,21 +22,21 @@ public class Ride implements iRide {
 	private int[] customer_ids = new int[3];
 	private int driver_id;
 	private String status;
-	private String start_time;
+	private Date start_time;
 	private String end_time;
 	private double fare;
 	private Location srcLocation;
 	private Location destLocation;
 	private String stateName;
-	
-	
+	Queue reqQueue;
+
 	public Ride(Queue matchedReqAndDriverQueue) {
 		state = new InitiatedState(this);
-		
 		setParams(matchedReqAndDriverQueue);
-		id++;	
+		id++;
+		reqQueue = matchedReqAndDriverQueue;
 	}
-	
+
 	public static int getId() {
 		return id;
 	}
@@ -62,11 +69,11 @@ public class Ride implements iRide {
 		this.status = status;
 	}
 
-	public String getStart_time() {
+	public Date getStart_time() {
 		return start_time;
 	}
 
-	public void setStart_time(String start_time) {
+	public void setStart_time(Date start_time) {
 		this.start_time = start_time;
 	}
 
@@ -98,18 +105,18 @@ public class Ride implements iRide {
 		this.fare = fare;
 	}
 
-	private void setParams(Queue matchedReqAndDriverQueue){
+	private void setParams(Queue matchedReqAndDriverQueue) {
 		ListIterator<Request> listIterator = (ListIterator<Request>) matchedReqAndDriverQueue.iterator();
 		int i = 0;
-		while(listIterator.hasNext()){
+		while (listIterator.hasNext()) {
 			SimpleRequest req = (SimpleRequest) listIterator.next();
-			customer_ids[i++] = req.getCustomerID();	
+			customer_ids[i++] = req.getCustomerID();
 			driver_id = req.getDriverID();
 			start_time = req.getDateTime();
 			fare = req.getFare();
 			srcLocation = req.getSource();
 			destLocation = req.getDestination();
-		}		
+		}
 	}
 
 	@Override
@@ -117,76 +124,126 @@ public class Ride implements iRide {
 		System.out.println(state.initiateRide());
 		setStateName("Ride Initiated!");
 	}
-	
+
 	@Override
 	public void startRide(int choice) {
-		System.out.println(state.startRide(choice));
+		state.startRide(choice);
+		NotifyRideStarted(reqQueue);
 		setStateName("Ride Started!");
 	}
 
 	@Override
 	public void waitingRide(int choice) {
-		System.out.println(state.waitingRide(choice));	
+		state.waitingRide(choice);
 	}
 
 	@Override
 	public void delayRide(int choice) {
-		System.out.println(state.delayRide(choice));
+		state.delayRide(choice);
+		NotifyRideDelayed(reqQueue);
 		setStateName("Ride Delayed!");
 	}
 
 	@Override
 	public void endRide(int choice) {
-		System.out.println(state.endRide(choice));		
+		System.out.println(state.endRide(choice));
 		setStateName("Ride Ended!");
+		NotifyRideEnded(reqQueue);
 	}
 
 	@Override
 	public void cancelRide(int choice) {
-		System.out.println(state.cancelRide(choice));	
+		state.cancelRide(choice);
 		setStateName("Ride Canceled!");
+		NotifyRideCanceled(reqQueue);
 	}
 
 	@Override
 	public void setState(iState s) {
-		state = s;	
+		state = s;
 	}
 
 	@Override
-	public iState getState() {	
+	public iState getState() {
 		return state;
 	}
 
-	public int getRideID(){
+	public int getRideID() {
 		return id;
-	}	
-	
-	public void setEndTime(){
+	}
+
+	public void setEndTime() {
 
 	}
-	public double getFare(){
+
+	public double getFare() {
 		return fare;
 	}
-	public Location getSource() {		
+
+	public Location getSource() {
 		return srcLocation;
 	}
 
 	public Location getDestination() {
 		return destLocation;
 	}
-	
-	public void setStateName(String inputStateName){
+
+	public void setStateName(String inputStateName) {
 		stateName = inputStateName;
 	}
-	public String getStateName(){
+
+	public String getStateName() {
 		return stateName;
 	}
 
-	@Override
-	public String toString() {
-		return "Ride details : " + "\n" + "Customer ids: " + Arrays.toString(customer_ids) + ", Driver_id:" + driver_id
-				+ ", Status: " + status + ", Start time: " + start_time + ", End time: " + end_time + ", Fare: " + fare ;
+	private void NotifyRideDelayed(Queue reqQueue) {
+
+		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
+		while (listIterator.hasNext()) {
+			SimpleRequest req = (SimpleRequest) listIterator.next();
+			NotifyCustomer(req, "Ride has been delayed, Ride is starting again soon!");
+		}
 	}
-	
-	
+
+	private void NotifyRideCanceled(Queue reqQueue) {
+
+		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
+		while (listIterator.hasNext()) {
+			SimpleRequest req = (SimpleRequest) listIterator.next();
+			NotifyCustomer(req, "Ride has been canceled, Sorry for inconvenience!");
+		}
+	}
+
+	private void NotifyRideStarted(Queue reqQueue) {
+
+		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
+		while (listIterator.hasNext()) {
+			SimpleRequest req = (SimpleRequest) listIterator.next();
+			NotifyCustomer(req, ", Ride started!");
+		}
+	}
+
+	private void NotifyRideEnded(Queue reqQueue) {
+
+		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
+		while (listIterator.hasNext()) {
+			SimpleRequest req = (SimpleRequest) listIterator.next();
+			NotifyCustomer(req, ", Ride ended!");
+		}
+	}
+
+	public void NotifyCustomer(SimpleRequest req, String messageToCustomer) {
+		MySQLAccess da = new MySQLAccess();
+		NotificationCenter notify;
+		Message message;
+		message = new EmailNotification();
+		Driver driver = da.getDriverById(req.getDriverID());
+
+		Customer cust = da.getCustomerByUserName(req.getUserName());
+
+		notify = new CustomerNotification(message,
+				"Dear " + cust.getFirstName() + " " + driver.getLastName() + messageToCustomer);
+
+		notify.memberNotification();
+	}
 }
