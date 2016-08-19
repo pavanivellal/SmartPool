@@ -80,7 +80,7 @@ public class Driver extends Member {
 		String member = super.toString();
 		String license = licenseDetails.toString();
 		String vehicledetails = vehicle.toString();
-		return "Driver Details: "+"\n" + member +"Rating: "+ rating+"\n"+"Availability: " 
+		return "Driver Details: "+"\n" + member +", Rating: "+ rating+"\n"+"Availability: " 
 				+ availability +"\n" + "LicenseDetails:"+"\n" + license +"\n"+ "Vehicle Details: " +"\n"+ vehicledetails;
 	}
 }

@@ -39,7 +39,7 @@ public class EndState implements iState {
 	@Override
 	public String endRide(int choice) {
 
-		return "Dear customer, ride ended! Thank you! See you again!";
+		return "Dear customer, ride ended! Thank you! See you again!\n";
 	}
 
 	/**

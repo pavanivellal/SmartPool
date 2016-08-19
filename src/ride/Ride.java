@@ -1,6 +1,8 @@
 package ride;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Queue;
@@ -14,7 +16,7 @@ import notification.Message;
 import notification.NotificationCenter;
 import request.Location;
 import request.Request;
-import request.SimpleRequest;
+import request.RideRequest;
 
 public class Ride implements iRide {
 
@@ -31,6 +33,7 @@ public class Ride implements iRide {
 	private String stateName;
 	Queue reqQueue;
 
+	
 	public Ride(Queue matchedReqAndDriverQueue) {
 		state = new InitiatedState(this);
 		setParams(matchedReqAndDriverQueue);
@@ -110,7 +113,7 @@ public class Ride implements iRide {
 		ListIterator<Request> listIterator = (ListIterator<Request>) matchedReqAndDriverQueue.iterator();
 		int i = 0;
 		while (listIterator.hasNext()) {
-			SimpleRequest req = (SimpleRequest) listIterator.next();
+			RideRequest req = (RideRequest) listIterator.next();
 			customer_ids[i++] = req.getCustomerID();
 			driver_id = req.getDriverID();
 			start_time = req.getDateTime();
@@ -201,7 +204,7 @@ public class Ride implements iRide {
 
 		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
 		while (listIterator.hasNext()) {
-			SimpleRequest req = (SimpleRequest) listIterator.next();
+			RideRequest req = (RideRequest) listIterator.next();
 			NotifyCustomer(req, "Ride has been delayed, Ride is starting again soon!");
 		}
 	}
@@ -210,7 +213,7 @@ public class Ride implements iRide {
 
 		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
 		while (listIterator.hasNext()) {
-			SimpleRequest req = (SimpleRequest) listIterator.next();
+			RideRequest req = (RideRequest) listIterator.next();
 			NotifyCustomer(req, "Ride has been canceled, Sorry for inconvenience!");
 		}
 	}
@@ -219,7 +222,7 @@ public class Ride implements iRide {
 
 		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
 		while (listIterator.hasNext()) {
-			SimpleRequest req = (SimpleRequest) listIterator.next();
+			RideRequest req = (RideRequest) listIterator.next();
 			NotifyCustomer(req, ", Ride started!");
 		}
 	}
@@ -228,12 +231,12 @@ public class Ride implements iRide {
 
 		ListIterator<Request> listIterator = (ListIterator<Request>) reqQueue.iterator();
 		while (listIterator.hasNext()) {
-			SimpleRequest req = (SimpleRequest) listIterator.next();
+			RideRequest req = (RideRequest) listIterator.next();
 			NotifyCustomer(req, ", Ride ended!");
 		}
 	}
 
-	public void NotifyCustomer(SimpleRequest req, String messageToCustomer) {
+	public void NotifyCustomer(RideRequest req, String messageToCustomer) {
 		MySQLAccess da = new MySQLAccess();
 		NotificationCenter notify;
 		Message message;
@@ -247,9 +250,10 @@ public class Ride implements iRide {
 
 		notify.memberNotification();
 	}
+
 	@Override
 	public String toString() {
-		return "Ride details : " + "\n" + "Customer ids: " + Arrays.toString(customer_ids) + ", Driver_id:" + driver_id
-				+ ", Status: " + status + ", Start time: " + start_time + ", End time: " + end_time + ", Fare: " + fare ;
+		return "Ride details : "+ "\n"+ "Customer ids: " + Arrays.toString(customer_ids) + ", Driver id: " + driver_id
+				+ ", Fare: " + fare +", Status: " +status;
 	}
 }

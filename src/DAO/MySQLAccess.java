@@ -28,7 +28,7 @@ import vehicle.Vehicle;
 public class MySQLAccess {
 
 	private static final String DRIVER = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://localhost:3306/carpool";
+	private static final String URL = "jdbc:mysql://localhost:3306/carpool?autoReconnect=true&useSSL=false";
 	private static final String USER = "root";
 	private static final String PASS = "root";
 
@@ -380,7 +380,7 @@ public class MySQLAccess {
 	 *            database.
 	 */
 
-	public void addCustomerFeedback(CustomerFeedback feedback, int cust_id, int driver_id,
+	public void addCustomerFeedback(CustomerFeedback feedback, String usrName,
 			Recommendation customereRecommendation, Complain customerComplain) {
 		String addCustFeedback = null;
 		Connection dbConnection = null;
@@ -396,17 +396,16 @@ public class MySQLAccess {
 
 			dbConnection = DriverManager.getConnection(URL, USER, PASS);
 			addCustFeedback = "INSERT INTO customer_feedback "
-					+ "(cust_id,driver_id,comment,rating,was_car_clean,is_recommended,complain) "
+					+ "(userName,comment,rating,was_car_clean,is_recommended,complain) "
 
-					+ "VALUES(?,?,?,?,?,?,?)";
+					+ "VALUES(?,?,?,?,?,?)";
 			preparedStatement = dbConnection.prepareStatement(addCustFeedback, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setInt(1, cust_id);
-			preparedStatement.setInt(2, driver_id);
-			preparedStatement.setString(3, feedback.getComment());
-			preparedStatement.setInt(4, feedback.getRating());
-			preparedStatement.setBoolean(5, feedback.wasCarClean());
-			preparedStatement.setBoolean(6, customereRecommendation.isRecommended());
-			preparedStatement.setString(7, customerComplain.getComplain());
+			preparedStatement.setString(1, usrName);
+			preparedStatement.setString(2, feedback.getComment());
+			preparedStatement.setInt(3, feedback.getRating());
+			preparedStatement.setBoolean(4, feedback.wasCarClean());
+			preparedStatement.setBoolean(5, customereRecommendation.isRecommended());
+			preparedStatement.setString(6, customerComplain.getComplain());
 			preparedStatement.executeUpdate();
 
 		} catch (Exception e) {
@@ -454,9 +453,9 @@ public class MySQLAccess {
 			dbConnection = DriverManager.getConnection(URL, USER, PASS);
 			addDriver = "INSERT INTO driver "
 					+ "(fname,lname,username,email,phoneno,cardtype,cardnumber,expirymonth,expiryyear,cvv,availability,"
-					+ "licenseno,validuntil,licenseplate,color,model,carStatus,addX,addY) "
+					+ "licenseno,validuntil,licenseplate,color,model,carStatus,addX,addY,rating) "
 
-					+ "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			preparedStatement = dbConnection.prepareStatement(addDriver, Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, driver.getFirstName());
 			preparedStatement.setString(2, driver.getLastName());
@@ -477,6 +476,7 @@ public class MySQLAccess {
 			preparedStatement.setBoolean(17, car.getCarStatus());
 			preparedStatement.setInt(18, driver.getX());
 			preparedStatement.setInt(19, driver.getY());
+			preparedStatement.setInt(20, 5);
 
 			i = preparedStatement.executeUpdate();
 
@@ -485,7 +485,7 @@ public class MySQLAccess {
 			driver_id = rs.getInt(1);
 
 		} catch (Exception e) {
-			System.out.println("Problem occured while creating new customer");
+			System.out.println("Problem occured while creating new driver");
 			e.printStackTrace();
 		}
 
@@ -556,6 +556,7 @@ public class MySQLAccess {
 				driver.setVehicle(car);
 				driver.setX(rs.getInt("addX"));
 				driver.setY(rs.getInt("addY"));
+				driver.setRating(rs.getInt("rating"));
 			}
 		} catch (Exception e) {
 			System.out.println("Error occured while getting customer information by ID");
@@ -627,6 +628,7 @@ public class MySQLAccess {
 				driver.setVehicle(car);
 				driver.setX(rs.getInt("addX"));
 				driver.setY(rs.getInt("addY"));
+				driver.setRating(rs.getInt("rating"));
 			}
 
 		} catch (Exception e) {
@@ -812,6 +814,7 @@ public class MySQLAccess {
 
 	/**
 	 * Method deletes the driver from database given the id of the driver
+	 * 
 	 * @param d
 	 */
 	// Method to delete driver from the database
@@ -850,16 +853,19 @@ public class MySQLAccess {
 			}
 		}
 	}
-/**
- * Method takes
- * @param feedback
- * @param cust_id
- * @param driver_id
- * @param driverRecommendation
- * @param driverComplain
- *   these parameters as driver feedback and saves that into the database.
- */
-	public void addDriverFeedback(DriverFeedback feedback, int cust_id, int driver_id,
+
+	/**
+	 * Method takes
+	 * 
+	 * @param feedback
+	 * @param cust_id
+	 * @param driver_id
+	 * @param driverRecommendation
+	 * @param driverComplain
+	 *            these parameters as driver feedback and saves that into the
+	 *            database.
+	 */
+	public void addDriverFeedback(DriverFeedback feedback, String usrName,
 			Recommendation driverRecommendation, Complain driverComplain) {
 
 		String addDriverFeedback = null;
@@ -876,17 +882,16 @@ public class MySQLAccess {
 
 			dbConnection = DriverManager.getConnection(URL, USER, PASS);
 			addDriverFeedback = "INSERT INTO driver_feedback "
-					+ "(cust_id,driver_id,comment,rating,was_on_time,is_recommended,complain) "
+					+ "(userName,comment,rating,was_on_time,is_recommended,complain) "
 
-					+ "VALUES(?,?,?,?,?,?,?)";
+					+ "VALUES(?,?,?,?,?,?)";
 			preparedStatement = dbConnection.prepareStatement(addDriverFeedback, Statement.RETURN_GENERATED_KEYS);
-			preparedStatement.setInt(1, cust_id);
-			preparedStatement.setInt(2, driver_id);
-			preparedStatement.setString(3, feedback.getComment());
-			preparedStatement.setInt(4, feedback.getRating());
-			preparedStatement.setBoolean(5, feedback.wasCustomerOnTime());
-			preparedStatement.setBoolean(6, driverRecommendation.isRecommended());
-			preparedStatement.setString(7, driverComplain.getComplain());
+			preparedStatement.setString(1, usrName);
+			preparedStatement.setString(2, feedback.getComment());
+			preparedStatement.setInt(3, feedback.getRating());
+			preparedStatement.setBoolean(4, feedback.wasCustomerOnTime());
+			preparedStatement.setBoolean(5, driverRecommendation.isRecommended());
+			preparedStatement.setString(6, driverComplain.getComplain());
 			preparedStatement.executeUpdate();
 
 		} catch (Exception e) {
@@ -908,6 +913,7 @@ public class MySQLAccess {
 	/*-----Methods to fetch rules from database----*/
 	/**
 	 * Method return the rate for the parking from the database
+	 * 
 	 * @return price
 	 */
 	public double getParkingFare() {
@@ -949,7 +955,8 @@ public class MySQLAccess {
 	}
 
 	/**
-	 * Method fetches the per mile fare for the specific car type 
+	 * Method fetches the per mile fare for the specific car type
+	 * 
 	 * @return price
 	 */
 	public double getCarFare() {
@@ -992,6 +999,7 @@ public class MySQLAccess {
 
 	/**
 	 * Method fetches the duration from the ride rules
+	 * 
 	 * @return duration
 	 */
 	public int getDuration() {
@@ -1031,8 +1039,10 @@ public class MySQLAccess {
 		}
 		return duration;
 	}
+
 	/**
 	 * Method fetches the no of maximum customers from the ride rules
+	 * 
 	 * @return maxCustomers
 	 */
 	public int getMaxNumber() {
@@ -1075,60 +1085,9 @@ public class MySQLAccess {
 
 	/*-----Methods to fetch all rides from database----*/
 
-	public int addNewRide(Ride ride) {
-		int ride_id = 0;
-		int i = 0;
-
-		String addRide = null;
-		Connection dbConnection = null;
-		
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			System.out.println("Database connection problem occured.");
-			e.printStackTrace();
-		}
-
-		try {
-
-			dbConnection = DriverManager.getConnection(URL, USER, PASS);
-			addRide = "INSERT INTO ride "
-					+ "(request_id,driver_id,cust1_id,cust2_id,cust3_id,start_time,end_time,fare,status) "
-
-					+ "VALUES(?,?,?,?,?,?,?,?,?)";
-			preparedStatement = dbConnection.prepareStatement(addRide, Statement.RETURN_GENERATED_KEYS);
-//			preparedStatement.setInt(1, ride.getRideID());
-			preparedStatement.setInt(1, 1);
-			preparedStatement.setInt(2, ride.getDriver_id());
-			int custIds[] = ride.getCustomer_ids();
-			preparedStatement.setInt(3, custIds[0]);
-			preparedStatement.setInt(4, custIds[1]);
-			preparedStatement.setInt(5, custIds[2]);
-			preparedStatement.setString(6, "10:20");
-			preparedStatement.setString(7, ride.getEnd_time());
-			preparedStatement.setDouble(8, ride.getFare());
-			preparedStatement.setString(9, ride.getStatus());
-
-			i = preparedStatement.executeUpdate();
-
-		} catch (Exception e) {
-			System.out.println("Problem occured while creating new customer");
-			e.printStackTrace();
-		}
-
-		finally {
-			try {
-				preparedStatement.close();
-				dbConnection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return ride_id;
-	}
-
 	/**
 	 * Method returns the list of rides from the database
+	 * 
 	 * @return rideList
 	 */
 	public ArrayList<Ride> getAllRides() {
@@ -1153,17 +1112,15 @@ public class MySQLAccess {
 			ResultSet rs = preparedStatement.executeQuery(getAllRides);
 			while (rs.next()) {
 				Ride ride = new Ride(queue);
-				Ride.setId(rs.getInt("id"));
-				ride.setDriver_id(rs.getInt("driver_id"));
+				Ride.setId(rs.getInt("id"));			
 				int customer_ids[] = new int[3];
 				customer_ids[0] = rs.getInt("cust1_id");
 				customer_ids[1] = rs.getInt("cust2_id");
 				customer_ids[2] = rs.getInt("cust3_id");
 				ride.setCustomer_ids(customer_ids);
-//				ride.setStart_time(rs.getDate("start_time"));
-				ride.setEnd_time(rs.getString("end_time"));
-				ride.setFare(rs.getDouble("fare"));
+				ride.setDriver_id(rs.getInt("driver_id"));
 				ride.setStatus(rs.getString("status"));
+				ride.setFare(rs.getDouble("fare"));
 				rideList.add(ride);
 			}
 		} catch (Exception e) {
@@ -1183,7 +1140,8 @@ public class MySQLAccess {
 
 	/*-----Methods to fetch all parking records from database----*/
 	/**
-	 * Method returns the list of parking record 
+	 * Method returns the list of parking record
+	 * 
 	 * @return parkingList
 	 */
 	public ArrayList<Parking> getAllParking() {
@@ -1229,4 +1187,60 @@ public class MySQLAccess {
 		}
 		return parkingList;
 	}
+
+	/**
+	 * Method to write ride details in the db
+	 *
+	 */
+//	public int addNewRide(Ride ride) {
+//		int ride_id = 0;
+//		int i = 0;
+//
+//		String addRide = null;
+//		Connection dbConnection = null;
+//
+//		try {
+//			Class.forName("com.mysql.jdbc.Driver");
+//		} catch (ClassNotFoundException e) {
+//			System.out.println("Database connection problem occured.");
+//			e.printStackTrace();
+//		}
+//
+//		try {
+//
+//			dbConnection = DriverManager.getConnection(URL, USER, PASS);
+//			addRide = "INSERT INTO ride "
+//					+ "(request_id,driver_id,cust1_id,cust2_id,cust3_id,start_time,end_time,fare,status) "
+//
+//					+ "VALUES(?,?,?,?,?,?,?,?,?)";
+//			preparedStatement = dbConnection.prepareStatement(addRide, Statement.RETURN_GENERATED_KEYS);
+//			// preparedStatement.setInt(1, ride.getRideID());
+//			preparedStatement.setInt(1, 1);
+//			preparedStatement.setInt(2, ride.getDriver_id());
+//			int custIds[] = ride.getCustomer_ids();
+//			preparedStatement.setInt(3, custIds[0]);
+//			preparedStatement.setInt(4, custIds[1]);
+//			preparedStatement.setInt(5, custIds[2]);
+//			preparedStatement.setString(6, "10:20");
+//			preparedStatement.setString(7, ride.getEnd_time());
+//			preparedStatement.setDouble(8, ride.getFare());
+//			preparedStatement.setString(9, ride.getStatus());
+//
+//			i = preparedStatement.executeUpdate();
+//
+//		} catch (Exception e) {
+//			System.out.println("Problem occured while creating new customer");
+//			e.printStackTrace();
+//		}
+//
+//		finally {
+//			try {
+//				preparedStatement.close();
+//				dbConnection.close();
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return ride_id;
+//	}
 }

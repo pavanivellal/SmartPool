@@ -73,7 +73,7 @@ public abstract class Member {
 	@Override
 	public String toString() {
 		String card = cardDetails.toString();
-		return " Id: "+ memberId + ", Name: " + firstName + " " +	lastName + ", User name: " + userName + ", Email id: "
+		return "Id: "+ memberId + ", Name: " + firstName + " " +	lastName + ", User name: " + userName + ", Email id: "
 				+ emailId + ", Contact number: " + phoneNumber + "\n"+ "CardDetails: " + "\n" + card;
 	}
 }

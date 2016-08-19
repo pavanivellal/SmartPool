@@ -25,7 +25,7 @@ public class EstimatePayment extends CalculatePayment {
 
 	public double cost_for_distance() {
 		tot_cost = super.miles * super.cost_per_mile * type_percent;
-		System.out.println("Total Cost for distance covered: " + tot_cost);
+		//System.out.println("Total Cost for distance covered: " + tot_cost);
 		ind_cost = tot_cost / super.no_of_memb;
 		return tot_cost;		
 	}

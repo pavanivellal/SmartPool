@@ -15,7 +15,7 @@ public class MappingContext {
 	
 	public MappingStrategy setMappingStrategy(String str, Queue reqQueue) { 	
 		
-		if(str == "rating"){
+		if(str.equalsIgnoreCase("Rating")){
 			mapSt = new MapRating();
 		} 
 		else{

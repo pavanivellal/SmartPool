@@ -13,8 +13,8 @@ import membership.Driver;
 import report.ReportSetup;
 import specialOffer.CustomerGroup;
 import specialOffer.CustomerOffers;
-import specialOffer.DriverGroup;
-import specialOffer.DriverOffers;
+
+import specialOffer.Offers;
 
 public class AdminMenu {
 
@@ -79,40 +79,24 @@ public class AdminMenu {
 	}
 
 	/**
-	 * Method sends the notification to all the users about the 
+	 * Method sends the notification to all the users about the
 	 */
 	public void NotifyOffers() {
 		MySQLAccess MSA = new MySQLAccess();
-		ArrayList<Customer> customer = MSA.getAllCustomers();
-		Queue<Driver> driver = MSA.getAllDrivers();
-		String offertype = null;
-		Scanner sc = new Scanner(System.in);
+		ArrayList<Customer> customerList = MSA.getAllCustomers();
+		Scanner sc = new Scanner(System.in);		
 
-		System.out.println("Select Offer to Broadcast:\n1.Customer Offers \n2.Driver Offers");
-		try {
-			offertype = reader.readLine();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		System.out.println("Change customer Discount percentage to:");
+		double pct = sc.nextDouble();
+		
+		CustomerOffers offer = new CustomerOffers(pct);
+		for(int i = 0; i< customerList.size(); i++)
+		{
+			CustomerGroup cust = new CustomerGroup(customerList.get(i).getFirstName() + " "
+											    	+ customerList.get(i).getLastName());			
+			offer.addObservre(cust);			
 		}
-		switch (offertype) {
-		case "1":
-			CustomerGroup cg = new CustomerGroup("Customers", customer);
-			CustomerOffers i_co = new CustomerOffers();
-			i_co.addObservre(cg);
-			System.out.println("Change customer Discount percentage to:");
-			double pct = sc.nextDouble();
-			i_co.setDiscount(pct);
-			break;
-		case "2":
-			DriverGroup dg = new DriverGroup("Drivers", driver);
-			DriverOffers i_do = new DriverOffers();
-			i_do.addObservre(dg);
-			System.out.println("Change Driver Bonus percentage to:");
-			double pct1 = sc.nextDouble();
-			i_do.setBonus(pct1);
-			break;
-		}
+	
+		offer.setDiscount(pct);
 	}
 }

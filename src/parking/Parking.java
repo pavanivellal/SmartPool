@@ -24,28 +24,22 @@ public class Parking {
 	{
 		switch(ParkType)
 		{
-		case "Covered":
-		case "P1":
+		case "1":
 			rate_per_hr = 4;
 			break;
 			
-		case "Open":
-		case "P2":
+		case "2":
 			rate_per_hr = 2;
 			break;
 			
 		default:
 			prk_per_person = 0;
-			System.out.println("No Parking Fees");
+			//System.out.println("No Parking Fees");
 			break;
 				
-		}
-		
+		}	
 		tot_prk_fee = rate_per_hr * hours;
-		prk_per_person = tot_prk_fee / no_of_memb;
-		System.out.printf("Total Parking charge : " + tot_prk_fee + "\nIndividual Parking charge : " + prk_per_person + "\n");
-
-		return prk_per_person;		
+		return tot_prk_fee;		
 	}
 
 	public int getId() {

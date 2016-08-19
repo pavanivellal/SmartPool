@@ -11,5 +11,4 @@ public class EmailNotification extends Message {
 	public void driverNotification(String message) {
 		System.out.println("Email Notification to driver : " + message);
 	}	
-
 }

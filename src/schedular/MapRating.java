@@ -10,7 +10,7 @@ import membership.Customer;
 import membership.Driver;
 import request.Location;
 import request.Request;
-import request.SimpleRequest;
+import request.RideRequest;
 import route.Utility;
 import vehicle.Car;
 
@@ -23,7 +23,7 @@ public class MapRating implements MappingStrategy {
 	MySQLAccess db = new MySQLAccess();
 	HashMap hm = new HashMap<>();
 
-	SimpleRequest req;
+	RideRequest req;
 	ListIterator<Request> listIterator;
 	ListIterator<Driver> driverIterator;
 
@@ -31,20 +31,20 @@ public class MapRating implements MappingStrategy {
 
 	/**
 	 * 
-	 * This method will choose closest driver after comparing date, destination
+	 * This method will choose driver with specific rating after comparing date, destination
 	 * and car type to map requests with driver
 	 */
 	@Override
 	public HashMap<String, Queue> MapDriverAndRequest(Queue reqQueue, Queue driverQueue, String driverName) {
 
-		SimpleRequest reqTemp = (SimpleRequest) reqQueue.element();
+		RideRequest reqTemp = (RideRequest) reqQueue.element();
 		listIterator = (ListIterator<Request>) reqQueue.iterator();
 		driverIterator = (ListIterator<Driver>) driverQueue.iterator();
 		Location commonDestination = reqTemp.getDestination();
 
 		// Compare it with every other request to find the match
 		while (listIterator.hasNext()) {
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 			if (req.getDestination().getX() == commonDestination.getX()
 					&& req.getDestination().getY() == commonDestination.getY()
 					&& req.getCarType() == reqTemp.getCarType()) {
@@ -56,7 +56,7 @@ public class MapRating implements MappingStrategy {
 		listIterator = (ListIterator<Request>) reqTempQueue.iterator();
 		while (listIterator.hasNext()) {
 
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 
 			while (driverIterator.hasNext()) {
 				driver = (Driver) driverIterator.next();
@@ -73,14 +73,15 @@ public class MapRating implements MappingStrategy {
 		listIterator = (ListIterator<Request>) reqTempQueue.iterator();
 		while (listIterator.hasNext()) {
 
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 
-			while (driverIterator.hasNext() && (driverCount == 1)) {
+			while (driverIterator.hasNext() && (driverCount == 0)) {
 
 				driver = (Driver) driverIterator.next();
 				if (driver.getRating() == req.getDriverRating()) {
 					driverQueue1.add(driver);
 					driverCount++;
+					closestDriver = driver;
 				}
 			}
 		}
@@ -89,7 +90,7 @@ public class MapRating implements MappingStrategy {
 
 		// Compare it with every other request to find the match
 		while (listIterator.hasNext()) {
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 			req.setDriverID(closestDriver.getMemberId());
 		}
 		divideRequestAccordingToDates();
@@ -111,29 +112,25 @@ public class MapRating implements MappingStrategy {
 		Queue day2 = new LinkedList<>();
 		Queue day3 = new LinkedList<>();
 
-		SimpleRequest tempReq;
-
+		RideRequest tempReq;
 		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
-		req = (SimpleRequest) reqTempQueue.element();
+		req = (RideRequest) reqTempQueue.element();
 
 		// System.out.println(req.getDateTime().toString());
 		while (listIterator2.hasNext()) {
-			tempReq = (SimpleRequest) listIterator2.next();
-			System.out.println(tempReq.getDateTime().toString());
+			tempReq = (RideRequest) listIterator2.next();
 			int result = tempReq.getDateTime().compareTo(req.getDateTime());
 			if (result == 0) {
 				day1.add(tempReq);
 			}
 		}
-
 		req = null;
-
 		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
 		while (listIterator2.hasNext()) {
-			tempReq = (SimpleRequest) listIterator2.next();
+			tempReq = (RideRequest) listIterator2.next();
 			if (!day1.contains(tempReq)) {
 				if (req == null) {
-					req = (SimpleRequest) reqTempQueue.element();
+					req = tempReq;
 				}
 				int result = tempReq.getDateTime().compareTo(req.getDateTime());
 				if (result == 0) {
@@ -145,10 +142,10 @@ public class MapRating implements MappingStrategy {
 		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
 		req = null;
 		while (listIterator2.hasNext()) {
-			tempReq = (SimpleRequest) listIterator2.next();
+			tempReq = (RideRequest) listIterator2.next();
 			if (!day1.contains(tempReq) && !day2.contains(tempReq)) {
 				if (req == null) {
-					req = (SimpleRequest) reqTempQueue.element();
+					req = (RideRequest) reqTempQueue.element();
 				}
 				int result = tempReq.getDateTime().compareTo(req.getDateTime());
 				if (result == 0) {
@@ -159,5 +156,6 @@ public class MapRating implements MappingStrategy {
 		hm.put("1", day1);
 		hm.put("2", day2);
 		hm.put("3", day3);
+	
 	}
 }

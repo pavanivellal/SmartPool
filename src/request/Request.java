@@ -15,11 +15,8 @@ public abstract class Request {
 	public Request() {
 		 reqId++;
 	}
-
 	public int getID(){
 		return reqId;
 	}
-
-	public abstract void display();
-	
+	public abstract void display();	
 }

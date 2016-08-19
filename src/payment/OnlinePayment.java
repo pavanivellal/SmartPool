@@ -23,9 +23,18 @@ public class OnlinePayment extends Payment{
 	@Override
 	public
 	void make_payment() {
-		System.out.println("Get Member ID");
-		int memb_id = scan.nextInt();
-		System.out.println("Payment Made by Online Payment Gateway");
+		System.out.println("Payment Made by Online Payment Gateway");	
+	}
+
+	@Override
+	public void custMembershipPay(int memPay) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void driverMembershipPay() {
+		// TODO Auto-generated method stub
 		
 	}
 

@@ -25,6 +25,5 @@ public class MemberShip implements MembershipInterface {
 
 	public void setState(MembershipState s) {
 		state = s;
-	}
-	
+	}	
 }

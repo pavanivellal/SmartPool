@@ -5,30 +5,35 @@ import java.util.ArrayList;
 import com.mysql.fabric.xmlrpc.base.Member;
 
 import membership.Customer;
+import membership.Driver;
+import notification.CustomerNotification;
+import notification.EmailNotification;
+import notification.Message;
+import notification.NotificationCenter;
+import payment.EstimatePayment;
+import rules.RideRule;
 
-public class CustomerGroup implements UserGroup{
+public class CustomerGroup implements iUserGroup{
 	
 	ArrayList<Customer> customer;
 	String name;
 	Customer temp_cust;
 	
 	
-	public CustomerGroup(String i_name, ArrayList<Customer> customer)
+	public CustomerGroup(String i_name)
 	{
 		this.name = i_name;
-		this.customer = customer;
-		
-		System.out.println("The following members are added to customer group :");
-		
-		for(int i = 0; i< customer.size(); i++)
-		{
-			temp_cust = customer.get(i);
-			System.out.println(temp_cust.getFirstName() + " " + temp_cust.getLastName());
-		}
 	}
-
+	
 	@Override
-	public void update() {
-		System.out.println("Notify Observer Group " + name);
+	public void update(double discount) {
+		
+		NotificationCenter notify;
+		Message message;
+		message = new EmailNotification();
+		
+		notify = new CustomerNotification(message,
+				"Dear "+ name + ", You have recieved discount on your next ride of % :" + discount);
+		notify.memberNotification();		
 	}
 }

@@ -15,6 +15,9 @@ import membership.CardDetails;
 import membership.Customer;
 import membership.Driver;
 import membership.MemberShip;
+import payment.CalculatePayment;
+import payment.CardPayment;
+import payment.Payment;
 
 public class CustomerMenu {
 
@@ -23,6 +26,9 @@ public class CustomerMenu {
 	public CustomerMenu() {
 		reader = Client.getReader();
 	}
+	CalculatePayment calPay1;
+	CardPayment cardPayment = new CardPayment(calPay1, 0);
+	MySQLAccess da = new MySQLAccess();
 /**
  * Method takes all the inputs from customer and creates new customer 
  * @return Customer
@@ -90,10 +96,7 @@ public class CustomerMenu {
 			System.out.println("To complete the registration pay for membership [y/n] ?: ");
 
 			if (reader.readLine().equalsIgnoreCase("y")) {
-				if (membershipType == 2)
-					System.out.println("$50 is debited from your card as a membership payment.");
-				else
-					System.out.println("$20 is debited from your card as a membership payment.");
+				cardPayment.custMembershipPay(membershipType);
 			} else {
 				System.out.println("Registration cancelled.");
 				return null;
@@ -175,11 +178,8 @@ public class CustomerMenu {
 			System.out.println("Feedback for the recent ride");
 			System.out.println("-----------------------------------------------------------------");
 
-			System.out.println("Enter customer id: ");
-			int cust_id = Integer.parseInt(reader.readLine());
-
-			System.out.println("Enter driver id: ");
-			int driver_id = Integer.parseInt(reader.readLine());
+			System.out.println("Enter customer user name: ");
+			String usrName = reader.readLine();
 
 			System.out.println("Enter comment: ");
 			String comment = reader.readLine();
@@ -200,10 +200,11 @@ public class CustomerMenu {
 			CustomerFeedback customerFeedback = new CustomerFeedback(comment, rating, isCarClean);
 			Recommendation customereRecommendation = new Recommendation(customerFeedback);
 			Complain customerComplain = new Complain(customerFeedback);
-			System.out.println("Want to add Recommendation/Complain [y/n] ?: ");
+			
+			System.out.println("Want to add  (Recommendation/Complain) [y/n] ?: ");
 			if (reader.readLine().equalsIgnoreCase("y")) {
-				System.out.println("1.	Recommendation ");
-				System.out.println("2.	Complain ");
+				System.out.println("1.Recommendation ");
+				System.out.println("2.Complain ");
 				int option = Integer.parseInt(reader.readLine());
 				if (option == 1) {
 					customereRecommendation.setRecommended(true);
@@ -218,15 +219,24 @@ public class CustomerMenu {
 					System.out.println("Complain is added ");
 					System.out.println("We will get back to you about this complain. ");
 				}
-				MySQLAccess da = new MySQLAccess();
-				da.addCustomerFeedback(customerFeedback, cust_id, driver_id, customereRecommendation, customerComplain);
-				System.out.println("Successfully submitted the feedback.");
+				System.out.println("Submit feedback? [y/n] :");
+				if (reader.readLine().equalsIgnoreCase("y")) {
+					MySQLAccess da = new MySQLAccess();
+					da.addCustomerFeedback(customerFeedback, usrName, customereRecommendation, customerComplain);
+					System.out.println("Successfully submitted the feedback.");
+	
+				} else {
+					System.out.println("Feedback submission cancelled.");
+				}
 			} else {
-				MySQLAccess da = new MySQLAccess();
-				customereRecommendation.setRecommended(false);
-				customerComplain.setComplain("");
-				da.addCustomerFeedback(customerFeedback, cust_id, driver_id, customereRecommendation, customerComplain);
-				System.out.println("Successfully submitted the feedback.");
+				System.out.println("Submit feedback? [y/n] :");
+				if (reader.readLine().equalsIgnoreCase("y")) {
+				
+					da.addCustomerFeedback(customerFeedback, usrName, customereRecommendation, customerComplain);
+					System.out.println("Successfully submitted the feedback.");
+				} else {
+					System.out.println("Feedback submission cancelled.");
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -241,7 +251,7 @@ public class CustomerMenu {
 		try {
 			System.out.println();
 			System.out.println("-----------------------------------------------------------------");
-			System.out.println("Enter user name: ");
+			System.out.println("Enter user name to delete account : ");
 			String userName = reader.readLine();
 
 			customer.setUserName(userName);
@@ -260,7 +270,6 @@ public class CustomerMenu {
  * @return Customer
  */
 	public Customer updateCustomer() {
-		Customer customer = new Customer();
 		CardDetails customerCardDetails = new CardDetails();
 		try {
 
@@ -268,6 +277,11 @@ public class CustomerMenu {
 			System.out.println("-------------------------------------------------------------------");
 			System.out.println("Update form for customer: ");
 			System.out.println("-------------------------------------------------------------------");
+			System.out.println("Enter customer user name: ");
+			String usrName = reader.readLine();
+			
+			Customer cust = da.getCustomerByUserName(usrName);
+			
 			System.out.println("Please enter following fields to update: ");
 			System.out.println("Credit card details:  ");
 
@@ -290,16 +304,16 @@ public class CustomerMenu {
 			System.out.println("CVV: ");
 			customerCardDetails.setCvv(Integer.parseInt(reader.readLine()));
 
-			customer.setCardDetails(customerCardDetails);
+			cust.setCardDetails(customerCardDetails);
 
 			System.out.println("Do you want to Submit update? [y:n]: ");
 			if (reader.readLine().equalsIgnoreCase("y")) {
 
 				MySQLAccess da = new MySQLAccess();
-				da.updateCustomer(customer);
+				da.updateCustomer(cust);
 
 				System.out.println("You are successfully Updated.");
-				return customer;
+				return cust;
 
 			} else {
 				System.out.println("Successfully Cancelled.");

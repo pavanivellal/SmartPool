@@ -16,6 +16,8 @@ import membership.Customer;
 import membership.Driver;
 import membership.LicenseDetails;
 import membership.MemberShip;
+import payment.CalculatePayment;
+import payment.CardPayment;
 import vehicle.Car;
 import vehicle.Vehicle;
 
@@ -26,8 +28,12 @@ public class DriverMenu {
 	public DriverMenu() {
 		reader = Client.getReader();
 	}
+	MySQLAccess da = new MySQLAccess();
+	CalculatePayment calPay1;
+	CardPayment cardPayment = new CardPayment(calPay1, 0);
 	/**
-	 * Method takes all the inputs from driver and creates new customer 
+	 * Method takes all the inputs from driver and creates new customer
+	 * 
 	 * @return Driver
 	 */
 
@@ -124,14 +130,14 @@ public class DriverMenu {
 			driver.setY(Integer.parseInt(reader.readLine()));
 
 			driver.setRating(5);
-			
+
 			MemberShip memberShip = new MemberShip();
 			memberShip.receiveMembershipApplication();
 
 			System.out.println("To complete the registration pay for membership [y/n] ?: ");
 
 			if (reader.readLine().equalsIgnoreCase("y")) {
-				System.out.println("$50 is debited from your card as a membership payment.");
+				cardPayment.driverMembershipPay();
 			} else {
 				System.out.println("Registration cancelled.");
 				return null;
@@ -158,8 +164,11 @@ public class DriverMenu {
 		System.out.println("Some problem occured while registration.");
 		return null;
 	}
+
 	/**
-	 * Method asks for the driver id to search for the driver and returns the driver
+	 * Method asks for the driver id to search for the driver and returns the
+	 * driver
+	 * 
 	 * @return Driver
 	 */
 	public Driver getDriverById() {
@@ -180,8 +189,11 @@ public class DriverMenu {
 		}
 		return driver;
 	}
+
 	/**
-	 * Method asks for the driver uername to search for the customer and returns the driver
+	 * Method asks for the driver uername to search for the customer and returns
+	 * the driver
+	 * 
 	 * @return Driver
 	 */
 
@@ -212,7 +224,7 @@ public class DriverMenu {
 		try {
 			System.out.println();
 			System.out.println("-----------------------------------------------------------------");
-			System.out.println("Enter user name: ");
+			System.out.println("Enter user name to delete account : ");
 			String userName = reader.readLine();
 
 			driver.setUserName(userName);
@@ -233,16 +245,11 @@ public class DriverMenu {
 		try {
 			System.out.println();
 			System.out.println("-----------------------------------------------------------------");
-			System.out.println("Feedback of the customers");
+			System.out.println("Feedback for recent ride");
 			System.out.println("-----------------------------------------------------------------");
 
-		
-			System.out.println("Enter driver id: ");
-			int driver_id = Integer.parseInt(reader.readLine());
-			
-
-			System.out.println("Enter customer id: ");
-			int cust_id = Integer.parseInt(reader.readLine());
+			System.out.println("Enter driver user name: ");
+			String usrName = reader.readLine();
 
 			System.out.println("Enter comment: ");
 			String comment = reader.readLine();
@@ -261,25 +268,18 @@ public class DriverMenu {
 			DriverFeedback driverFeedback = new DriverFeedback(comment, rating, wasOnTime);
 			Recommendation driverRecommendation = new Recommendation(driverFeedback);
 			Complain driverComplain = new Complain(driverFeedback);
-			System.out.println("Submit feedback? [y/n] :");
 
+			System.out.println("Want to add (Recommendation/Complain) [y/n] ?: ");
 			if (reader.readLine().equalsIgnoreCase("y")) {
-				System.out.println("Successfully submitted the feedback.");
-			} else {
-				System.out.println("Feedback submission cancelled.");
-			}
-
-			System.out.println("Want to add Recommendation/Complain [y/n] ?: ");
-			if (reader.readLine().equalsIgnoreCase("y")) {
-				System.out.println("1.	Recommendation ");
-				System.out.println("2.	Complain ");
+				System.out.println("1.Recommendation ");
+				System.out.println("2.Complain ");
 				int option = Integer.parseInt(reader.readLine());
 
-				if (option == 1) {		
+				if (option == 1) {
 
 					driverRecommendation.setRecommended(true);
 					driverComplain.setComplain("");
-					System.out.println("Customer is recommended by you: ");
+					System.out.println("Customer is recommended by you! ");
 					System.out.println("Thank you for recommendation. ");
 				}
 				if (option == 2) {
@@ -289,30 +289,37 @@ public class DriverMenu {
 					System.out.println("Complain is added ");
 					System.out.println("We will get back to you about this complain. ");
 				}
-				MySQLAccess da = new MySQLAccess();
-
-				da.addDriverFeedback(driverFeedback, cust_id, driver_id, driverRecommendation, driverComplain);
-				System.out.println("Successfully submitted the feedback.");	
-
+				System.out.println("Submit feedback? [y/n] :");
+				if (reader.readLine().equalsIgnoreCase("y")) {
+					MySQLAccess da = new MySQLAccess();
+					da.addDriverFeedback(driverFeedback, usrName, driverRecommendation, driverComplain);
+					System.out.println("Successfully submitted the feedback.");
+				} else {
+					System.out.println("Feedback submission cancelled.");
+				}
 			} else {
-				MySQLAccess da = new MySQLAccess();
-				driverRecommendation.setRecommended(false);
-				driverComplain.setComplain("");
-
-				da.addDriverFeedback(driverFeedback, cust_id, driver_id, driverRecommendation, driverComplain);
-				System.out.println("Successfully submitted the feedback.");
+				System.out.println("Submit feedback? [y/n] :");
+				if (reader.readLine().equalsIgnoreCase("y")) {
+				
+					da.addDriverFeedback(driverFeedback, usrName, driverRecommendation, driverComplain);
+					System.out.println("Successfully submitted the feedback.");
+				} else {
+					System.out.println("Feedback submission cancelled.");
+				}
 			}
-
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
+
 	/**
-	 * Method asks for the driver username and update fields. Then updates the fields of driver
+	 * Method asks for the driver username and update fields. Then updates the
+	 * fields of driver
+	 * 
 	 * @return Driver
 	 */
 	public Driver updateDriverCard() {
-		Driver driver = new Driver();
 		CardDetails driverCardDetails = new CardDetails();
 		try {
 
@@ -320,9 +327,16 @@ public class DriverMenu {
 			System.out.println("-------------------------------------------------------------------");
 			System.out.println("Update form for driver: ");
 			System.out.println("-------------------------------------------------------------------");
+			
+			System.out.println("Enter customer user name: ");
+			String usrName = reader.readLine();
+			
+			Driver driver = da.getDriverByUserName(usrName);
+			
 			System.out.println("Please enter following fields to update: ");
+			
 			System.out.println("Credit card details:  ");
-	
+
 			System.out.println("Select card type [1.VISA/ 2. MASTERCARD]: ");
 			int type = Integer.parseInt(reader.readLine());
 			if (type == 1) {
@@ -364,12 +378,14 @@ public class DriverMenu {
 		System.out.println("Problem while updating driver information.");
 		return null;
 	}
+
 	/**
-	 * Method asks for the driver username and update fields. Then updates the fields of car
+	 * Method asks for the driver username and update fields. Then updates the
+	 * fields of car
+	 * 
 	 * @return Customer
 	 */
 	public Driver updateDriverCar() {
-		Driver driver = new Driver();
 		Car updatedCar = new Car();
 		try {
 
@@ -377,9 +393,13 @@ public class DriverMenu {
 			System.out.println("-------------------------------------------------------------------");
 			System.out.println("Update form for vehicle: ");
 			System.out.println("-------------------------------------------------------------------");
+			
+			System.out.println("Enter customer user name: ");
+			String usrName = reader.readLine();
+			
+			Driver driver = da.getDriverByUserName(usrName);
 			System.out.println("Please enter following fields to update: ");
 			System.out.println("Enter car details: ");
-			
 
 			System.out.println("License plate: ");
 			updatedCar.setLicensePlate(reader.readLine());
@@ -395,7 +415,7 @@ public class DriverMenu {
 				updatedCar.setModel("Five seater");
 
 			driver.setVehicle(updatedCar);
-			
+
 			System.out.println("Do you want to Submit update? [y:n]: ");
 			if (reader.readLine().equalsIgnoreCase("y")) {
 
@@ -408,9 +428,7 @@ public class DriverMenu {
 			} else {
 				System.out.println("Successfully Cancelled.");
 				return null;
-
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

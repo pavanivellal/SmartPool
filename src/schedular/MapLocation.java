@@ -13,7 +13,7 @@ import DAO.MySQLAccess;
 import membership.Driver;
 import request.Location;
 import request.Request;
-import request.SimpleRequest;
+import request.RideRequest;
 import route.RoutingContext;
 import route.Utility;
 import vehicle.Car;
@@ -27,7 +27,7 @@ public class MapLocation implements MappingStrategy {
 	MySQLAccess db = new MySQLAccess();
 	HashMap hm = new HashMap<>();
 
-	SimpleRequest req;
+	RideRequest req;
 	ListIterator<Request> listIterator;
 	ListIterator<Driver> driverIterator;
 
@@ -37,14 +37,14 @@ public class MapLocation implements MappingStrategy {
 	 * and car type to map requests with driver
 	 */
 	public HashMap<String, Queue> MapDriverAndRequest(Queue reqQueue, Queue driverQueue, String driverName) {
-		SimpleRequest reqTemp = (SimpleRequest) reqQueue.element();
+		RideRequest reqTemp = (RideRequest) reqQueue.element();
 		listIterator = (ListIterator<Request>) reqQueue.iterator();
 		driverIterator = (ListIterator<Driver>) driverQueue.iterator();
 		Location commonDestination = reqTemp.getDestination();
 
 		// Compare it with every other request to find the match
 		while (listIterator.hasNext()) {
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 			if (req.getDestination().getX() == commonDestination.getX()
 					&& req.getDestination().getY() == commonDestination.getY()
 					&& req.getCarType() == reqTemp.getCarType()) {
@@ -57,7 +57,7 @@ public class MapLocation implements MappingStrategy {
 
 		while (listIterator.hasNext()) {
 
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 
 			while (driverIterator.hasNext()) {
 				driver = (Driver) driverIterator.next();
@@ -69,7 +69,7 @@ public class MapLocation implements MappingStrategy {
 		}
 
 		// Find closest driver
-		SimpleRequest req1 = (SimpleRequest) reqTempQueue.element();
+		RideRequest req1 = (RideRequest) reqTempQueue.element();
 		Location commonSource = req1.getSource();
 
 		int closestDriverDistance = 1000000;
@@ -87,7 +87,7 @@ public class MapLocation implements MappingStrategy {
 		listIterator = (ListIterator<Request>) reqTempQueue.iterator();
 
 		while (listIterator.hasNext()) {
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 			req.setDriverID(closestDriver.getMemberId());
 		}
 		divideRequestAccordingToDates();
@@ -123,14 +123,13 @@ public class MapLocation implements MappingStrategy {
 		Queue day2 = new LinkedList<>();
 		Queue day3 = new LinkedList<>();
 
-		SimpleRequest tempReq;
+		RideRequest tempReq;
 		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
-		req = (SimpleRequest) reqTempQueue.element();
+		req = (RideRequest) reqTempQueue.element();
 
 		// System.out.println(req.getDateTime().toString());
 		while (listIterator2.hasNext()) {
-			tempReq = (SimpleRequest) listIterator2.next();
-			System.out.println(tempReq.getDateTime().toString());
+			tempReq = (RideRequest) listIterator2.next();
 			int result = tempReq.getDateTime().compareTo(req.getDateTime());
 			if (result == 0) {
 				day1.add(tempReq);
@@ -139,10 +138,10 @@ public class MapLocation implements MappingStrategy {
 		req = null;
 		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
 		while (listIterator2.hasNext()) {
-			tempReq = (SimpleRequest) listIterator2.next();
+			tempReq = (RideRequest) listIterator2.next();
 			if (!day1.contains(tempReq)) {
 				if (req == null) {
-					req = (SimpleRequest) reqTempQueue.element();
+					req = tempReq;
 				}
 				int result = tempReq.getDateTime().compareTo(req.getDateTime());
 				if (result == 0) {
@@ -154,10 +153,10 @@ public class MapLocation implements MappingStrategy {
 		listIterator2 = (ListIterator<Request>) reqTempQueue.iterator();
 		req = null;
 		while (listIterator2.hasNext()) {
-			tempReq = (SimpleRequest) listIterator2.next();
+			tempReq = (RideRequest) listIterator2.next();
 			if (!day1.contains(tempReq) && !day2.contains(tempReq)) {
 				if (req == null) {
-					req = (SimpleRequest) reqTempQueue.element();
+					req = (RideRequest) reqTempQueue.element();
 				}
 				int result = tempReq.getDateTime().compareTo(req.getDateTime());
 				if (result == 0) {

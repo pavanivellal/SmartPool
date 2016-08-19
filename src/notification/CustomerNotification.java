@@ -12,4 +12,5 @@ public class CustomerNotification extends NotificationCenter {
 	public void memberNotification() {
 		customerNotification(Message);		
 	}
+
 }

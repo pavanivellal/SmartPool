@@ -20,7 +20,7 @@ import membership.LicenseDetails;
 import membership.MemberShip;
 import payment.CardPayment;
 import report.ReportSetup;
-import request.SimpleRequest;
+import request.RideRequest;
 import schedular.Schedular;
 import vehicle.Car;
 import vehicle.Vehicle;
@@ -33,15 +33,15 @@ public class Menu {
 	private CustomerMenu customerMenu = new CustomerMenu();
 	private Driver driver = new Driver();
 
-	SimpleRequest req;
+	RideRequest req;
 	private Queue reqQueue = new LinkedList();
 	private Queue reqQueueThreeDays = new LinkedList();
 	Scanner keyboard = new Scanner(System.in);
 	String input = "";
 	Customer cust = new Customer();
-	SimpleRequest request;
+	RideRequest request;
 	MySQLAccess db = new MySQLAccess();
-	ListIterator<SimpleRequest> listIterator = (ListIterator<SimpleRequest>) reqQueue.iterator();
+	ListIterator<RideRequest> listIterator = (ListIterator<RideRequest>) reqQueue.iterator();
 
 	public Menu() {
 		while (true)
@@ -54,7 +54,7 @@ public class Menu {
 	private void displayMainMenu() {
 		// This is the main menu for the system
 		System.out.println();
-		System.out.println("--------Welcome to SmartPool sysetm--------");
+		System.out.println("--------Welcome to SmartPool system--------");
 		System.out.println("-------------------------------------------");
 		System.out.println("1. Customer Menu");
 		System.out.println("2. Driver Menu");
@@ -116,9 +116,6 @@ public class Menu {
 						break;
 					case 1:
 						customer = customerMenu.registration();
-						if (customer != null) {
-							System.out.println(customer.toString());
-						}
 						break;
 					case 2:
 						customer = customerMenu.getCustomerByUserName();
@@ -138,7 +135,7 @@ public class Menu {
 						break;
 					case 5:
 						System.out.println("\nDear Customer, Please enter request details:");
-						acceptRequest();
+						acceptCustomerRequest();
 						break;
 
 					case 6:
@@ -172,8 +169,7 @@ public class Menu {
 				System.out.println("5. Update Car");
 				System.out.println("6. Check for ride requests");
 				System.out.println("7. Initiate the ride");
-				System.out.println("8. Book parking");
-				System.out.println("9. Give feedback for customer");
+				System.out.println("8. Give feedback for customer");
 				System.out.println("0. Back to Main Menu");
 				System.out.println("Enter menu option: ");
 				String line = Client.getReader().readLine();
@@ -187,9 +183,6 @@ public class Menu {
 						break;
 					case 1:
 						driver = driverMenu.registration();
-						if (driver != null) {
-							System.out.println(driver.toString());
-						}
 						break;
 					case 2:
 						driver = driverMenu.getDriverByUserName();
@@ -222,12 +215,8 @@ public class Menu {
 						break;
 					case 7:
 						sc.startRide();
-						sc.payForRide();
-						sc.DoPayment();
 						break;
 					case 8:
-						break;
-					case 9:
 						driverMenu.addDriverFeedback();
 						break;
 					}
@@ -293,10 +282,11 @@ public class Menu {
 	 *
 	 */
 
-	public void acceptRequest() {
+	public void acceptCustomerRequest() {
 
-		request = new SimpleRequest();
+		request = new RideRequest();
 		request.acceptUserName();
+		String userName = request.getUserName();
 		while (true) {
 			request.acceptSource();
 			request.acceptDestination();
@@ -312,6 +302,7 @@ public class Menu {
 			request.acceptCarType();
 			request.acceptDriverRating();
 
+			request.setUserName(userName);
 			request.setCustomerID(db.getCustomerByUserName(request.getUserName()).getMemberId());
 			reqQueue.add(request);
 
@@ -321,7 +312,7 @@ public class Menu {
 			if (!input.equalsIgnoreCase("y")) {
 				break;
 			}
-			request = new SimpleRequest();
+			request = new RideRequest();
 		}
 	}
 
@@ -334,7 +325,7 @@ public class Menu {
 	public void selectRequestForThreeDays() {
 
 		java.util.Date parsed = null;
-		listIterator = (ListIterator<SimpleRequest>) reqQueue.iterator();
+		listIterator = (ListIterator<RideRequest>) reqQueue.iterator();
 
 		// Accept the date
 		try {
@@ -349,7 +340,7 @@ public class Menu {
 		// Calculate date after 3 days and select the requests baseed on it
 		Date nextDate = new java.sql.Date(parsed.getTime() + 3 * 24 * 60 * 60 * 1000);
 		while (listIterator.hasNext()) {
-			req = (SimpleRequest) listIterator.next();
+			req = (RideRequest) listIterator.next();
 			if (req.getDateTime().before(nextDate)) {
 				reqQueueThreeDays.add(req);
 			}
