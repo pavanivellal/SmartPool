@@ -3,6 +3,7 @@ import rules.PaymentRule;
 public abstract class CalculatePayment {
 	
 	PaymentRule rule=new PaymentRule();
+	
 	public double cost_per_mile = rule.getRule1();
 	public double miles;
 	public int no_of_memb;

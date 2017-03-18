@@ -4,6 +4,7 @@ public abstract class Rule {
 		
 	int ruleId;
 	String description;
+	
 	void retrieve(){		
 		connectToDatabase();
 		getRule1();

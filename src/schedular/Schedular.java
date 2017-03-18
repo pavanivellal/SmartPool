@@ -168,7 +168,6 @@ public class Schedular implements iSchedular {
 
 				DoPayment();
 				break;
-
 			case 0:
 				break;
 
@@ -211,7 +210,6 @@ public class Schedular implements iSchedular {
 	 * Notify customer about acceptance
 	 */
 	private void NotifyRideAcceptance(Queue reqQueue) {
-
 		listIterator = (ListIterator<Request>) reqQueue.iterator();
 		Location commonSource = (Location) ((RideRequest) reqQueue.element()).getSource();
 		while (listIterator.hasNext()) {
@@ -236,8 +234,10 @@ public class Schedular implements iSchedular {
 		int optimalRoute = FindRoutes(req.getSource().getX(), req.getSource().getY(), req.getDestination().getX(),
 				req.getDestination().getY());
 
+		
 		EstimatePayment estimate = new EstimatePayment(optimalRoute, 2, req.getCarType());
 		estimate.cost_for_distance();
+		
 		RideRule rule = new RideRule();
 		notify = new CustomerNotification(message,
 				"Dear " + cust.getFirstName() + " " + cust.getLastName() + ", " + "Your Ride Request has been Accepted!"
